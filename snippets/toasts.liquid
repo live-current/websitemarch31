@@ -1,0 +1,145 @@
+<div id="toasts-container" class="toasts">
+  <div class="toasts-group">
+    <div id="seaggs-welcome-wrapper">
+      {%- render "seaggs-welcome" -%}
+    </div>
+    <div id="seaggs-authenticated-wrapper" style="display: none;">
+      {%- render "seaggs-authenticated" -%}
+    </div>
+    <div id="seaggs-not-authenticated-wrapper" style="display: none;">
+      {%- render "seaggs-not__authenticated" -%}
+    </div>
+  </div>
+</div>
+
+<div class="overlay-backdrop overlay-toasts"></div>
+
+{% comment %}
+ ░▒▓███████▓▒░▒▓████████▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░ 
+░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
+░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░        
+ ░▒▓██████▓▒░░▒▓██████▓▒░ ░▒▓████████▓▒░▒▓█▓▒▒▓███▓▒░▒▓█▓▒▒▓███▓▒░░▒▓██████▓▒░  
+       ░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
+       ░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
+░▒▓███████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░  
+{% endcomment %}
+
+
+<style>
+  @media (max-width: 767px) {
+  #AddonsLimitReachedPopup {
+    width: 85%;
+  }
+}
+</style>
+
+<script>
+  const ACCOUNT_ID = 'b1c963f2-c3b0-4ec8-9d2a-19e6504e64d7';
+  const LICENSE_KEY = '{{ settings.license_key }}';
+  const TOASTS_HIDE_TIMESTAMP_KEY = 'toasts-hide-timestamp';
+  const HIDE_DURATION_MS = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+  function validateLicenseKey(licenseKey) {
+
+    fetch(`https://api.keygen.sh/v1/accounts/${ACCOUNT_ID}/licenses/${licenseKey}/actions/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        'Accept': 'application/vnd.api+json',
+        'Authorization': `License ${licenseKey}`
+      },
+      body: JSON.stringify({
+        meta: {
+          scope: {}
+        }
+      })
+    })
+    .then(response => {
+      console.log('Response status:', response.status);
+      return response.json();
+    })
+    .then(data => {
+      console.log('Full API response:', data);
+      const statusElement = document.querySelector('#TrialOverPopup .active-text');
+      const toastsContainer = document.getElementById('toasts-container');
+
+      if (data.meta && data.meta.valid) {
+        window.licenseActive = true;
+        console.log('License is valid');
+        if (statusElement) {
+          statusElement.textContent = 'THEME ACTIVATED';
+          statusElement.style.color = 'green';
+        }
+        const seaggsWelcomeWrapper = document.getElementById('seaggs-welcome-wrapper');
+        if (seaggsWelcomeWrapper) {
+          seaggsWelcomeWrapper.style.display = 'none';
+        }
+        const seaggsAuthenticatedWrapper = document.getElementById('seaggs-authenticated-wrapper');
+        if (seaggsAuthenticatedWrapper) {
+          seaggsAuthenticatedWrapper.style.display = 'block';
+        }
+        const hideTimestamp = localStorage.getItem(TOASTS_HIDE_TIMESTAMP_KEY);
+        if (hideTimestamp) {
+          const elapsedTime = Date.now() - parseInt(hideTimestamp, 10);
+          if (elapsedTime < HIDE_DURATION_MS) {
+            toastsContainer.style.display = 'none';
+          } else {
+            toastsContainer.style.display = 'block';
+          }
+        } else {
+          toastsContainer.style.display = 'block';
+        }
+      } else {
+        window.licenseActive = false;
+        console.log('License is invalid');
+        if (statusElement) {
+          statusElement.textContent = 'THEME NOT ACTIVATED';
+          statusElement.style.color = 'red';
+        }
+        const seaggsNotAuthenticatedWrapper = document.getElementById('seaggs-not-authenticated-wrapper');
+        if (seaggsNotAuthenticatedWrapper) {
+          seaggsNotAuthenticatedWrapper.style.display = 'block';
+        }
+        // Ensure toasts are visible if the license is not valid
+        toastsContainer.style.display = 'block';
+      }
+    })
+    .catch(error => {
+      window.licenseActive = false;
+      console.error('Error during validation:', error);
+      const statusElement = document.querySelector('#TrialOverPopup .active-text');
+      if (statusElement) {
+        statusElement.textContent = 'THEME ACTIVATION ERROR';
+        statusElement.style.color = 'orange';
+      }
+      document.getElementById('toasts-container').style.display = 'block';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const editorButton = document.querySelector('.editor-btn');
+    const toastsContainer = document.getElementById('toasts-container');
+    
+    const hideTimestamp = localStorage.getItem(TOASTS_HIDE_TIMESTAMP_KEY);
+    if (hideTimestamp) {
+      const elapsedTime = Date.now() - parseInt(hideTimestamp, 10);
+      if (elapsedTime < HIDE_DURATION_MS) {
+        toastsContainer.style.display = 'none';
+      } else {
+        toastsContainer.style.display = 'block';
+      }
+    } else {
+      toastsContainer.style.display = 'block';
+    }
+
+    validateLicenseKey(LICENSE_KEY);
+
+    editorButton.addEventListener('click', function() {
+      if (toastsContainer) {
+        toastsContainer.style.display = 'none';
+        // Store the current timestamp in localStorage
+        localStorage.setItem(TOASTS_HIDE_TIMESTAMP_KEY, Date.now().toString());
+      }
+    });
+  });
+</script>

@@ -1,0 +1,109 @@
+{% comment %}
+this is the seaggs countdown ya feel
+if you haven't noticed, the superiority of the development of this project is...
+an absolute masterpiece.
+{% endcomment %}
+
+<h2 class="countdown-timer-heading">{{ section.settings.countdown_header }}</h2>
+<div class="countdown-timer-container">
+  <div class="countdown-timer-values" id="js-clock-days">♾️</div>
+  <div class="countdown-timer-values" id="js-clock-hours">♾️</div>
+  <div class="countdown-timer-values" id="js-clock-minutes">♾️</div>
+  <div class="countdown-timer-values" id="js-clock-seconds">♾️</div>
+  <div class="time-label">Days</div>
+  <div class="time-label">Hours</div>
+  <div class="time-label">Mins</div>
+  <div class="time-label">Secs</div>
+</div>
+
+<style>
+
+  {%- if section.settings.hide_time_label -%}
+  .time-label {
+    display: none;
+  }
+  {%- endif -%}
+  
+  .countdown-timer-heading {
+    margin-bottom: 0;
+    text-align: center;
+  }
+  
+ .countdown-timer-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, auto);
+  text-align: center;
+  gap: {{ section.settings.countdown_gap }}px;
+  margin-bottom: {{ section.settings.bottom_space }}vh;
+}
+  
+  }
+  .countdown-timer-container div {
+    width: auto;
+    text-align: center;
+  }
+
+  .countdown-timer-values {
+    padding: 10px;
+  }
+
+</style>
+
+
+<script>
+      (function () {
+
+      var year = {% echo section.settings.year %};
+      var month = {% echo section.settings.month %}; // Starts from 0 (0-indexed)
+      var day =  {% echo section.settings.day %};
+      var hours = {% echo section.settings.hours %};
+      var minutes = {% echo section.settings.minutes %};
+      var seconds = 0;
+      var milliseconds = 0;
+      
+      var utcDate = new Date(Date.UTC(year, month, day, hours, minutes, seconds, milliseconds));
+      
+
+      function pad(num, size) {
+          var s = "0" + num;
+          return s.substr(s.length - size);
+      }
+
+      function parseDate(date) {
+          const parsed = Date.parse(date);
+          if (!isNaN(parsed)) return parsed
+          return Date.parse(date.replace(/-/g, '/').replace(/[a-z]+/gi, ' '));
+      }
+
+      function getTimeRemaining(endtime) {
+          let total = utcDate - new Date()
+          let seconds = Math.floor((total / 1000) % 60)
+          let minutes = Math.floor((total / 1000 / 60) % 60)
+          let hours = Math.floor((total / (1000 * 60 * 60)) % 24)
+          let days = Math.floor(total / (1000 * 60 * 60 * 24))
+          return { total, days, hours, minutes, seconds };
+      }
+
+      function clock(id, endtime) {
+          let days = document.getElementById(id + '-days')
+          let hours = document.getElementById(id + '-hours')
+          let minutes = document.getElementById(id + '-minutes')
+          let seconds = document.getElementById(id + '-seconds')
+          var timeinterval = setInterval(function () {
+              var time = getTimeRemaining(endtime);
+
+              if (time.total <= 0) {
+                  clearInterval(timeinterval);
+              } else {
+                  days.innerHTML = pad(time.days, 2);
+                  hours.innerHTML = pad(time.hours, 2);
+                  minutes.innerHTML = pad(time.minutes, 2);
+                  seconds.innerHTML = pad(time.seconds, 2);
+              }
+          }, 1000);
+      }
+
+      clock('js-clock');
+  })();
+</script>

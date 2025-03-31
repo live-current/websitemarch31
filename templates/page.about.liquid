@@ -1,0 +1,71 @@
+{%- assign about_font = settings.about_header_font -%}
+{%- assign about_background_image = settings.about_background_image -%}
+
+<div class="about-page-wrapper">
+  <div class="box">
+    <div class="wrapper">
+      <div class="grid">
+        <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+          <div class="section-header">
+            <div class="page-title-wrapper">
+              <h1 class="page-title">{{ page.title }}</h1>
+            </div>
+          </div>
+
+          {%- unless page.content == blank -%}
+            <div class="page-content rte">
+              {{ page.content }}
+            </div>
+          {%- endunless -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+  #mainContent {
+    {% if settings.about_background_image != blank %}
+      background-image: url({{ settings.about_background_image | img_url: 'master' }});
+      background-size: {{ settings.about_background_size }};
+      background-repeat: {{ settings.about_background_repeat }};
+      background-position: {{ settings.about_background_position_x }}% {{ settings.about_background_position_y }}%;
+    {% endif %}
+    background-color: {{ settings.about_background_color }};
+  }
+
+  .page-content, .rte, .page-title, .template-page h1, .template-page h2, .template-page h3 {
+    color: {{ settings.about_text_color }};
+    font-family: {{ about_font.family }};
+  }
+        
+  body.template-page-about {
+    min-height: 100vh;
+    background-color: {{ settings.about_background_color }};
+    {% if settings.about_background_image != blank %}
+      background-image: url({{ settings.about_background_image | img_url: 'https://cdn.shopify.com/s/files/1/0677/9856/5055/files/70f479eb-bcfa-45d7-a63e-25421a592285.jpg?v=1743051164' }});
+      background-size: {{ settings.about_background_size | default: 'cover' }};
+      background-repeat: {{ settings.about_background_repeat | default: 'no-repeat' }};
+      background-position: {{ settings.about_background_position_x | default: 50 }}% {{ settings.about_background_position_y | default: 50 }}%;
+    {% endif %}
+}
+
+.about-page-wrapper {
+  min-height: 100vh;
+}
+
+
+
+  .template-page-about .page-title,
+  .template-page-about .page-content,
+  .template-page-about .rte,
+  .template-page-about h1,
+  .template-page-about h2,
+  .template-page-about h3 {
+    color: {{ settings.about_text_color }};
+    font-family: {{ settings.about_header_font.family }}, sans-serif;
+  }
+
+  {{ settings.about_header_font | font_face }}
+

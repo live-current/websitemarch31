@@ -1,0 +1,5 @@
+<div class="login-image">
+  {%- if settings.password_entry_screen_image != blank -%}
+    {{ settings.password_entry_screen_image | image_url: width: '400' | image_tag: class: 'login-img', loading: 'lazy' }}
+  {%- endif -%}
+</div>

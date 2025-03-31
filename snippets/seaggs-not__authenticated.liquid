@@ -1,0 +1,55 @@
+{%- if request.design_mode -%}
+  <div id="AddonsLimitReachedPopup" class="toast">
+    <div class="card welcome-popup">
+      <div class="card-header">
+        <div class="toast-image">
+          {%- render "svg-definitions" -%}
+        </div>
+
+        <div class="top-toast">
+        <h6 class="spacer-bottom-none">
+          Activate your SEAGGS theme
+        </h6>
+          
+        </div>
+      </div>
+
+      <div class="card-body">
+          <h6 class="text-small addons-limit-popup-text">
+    Thank you for purchasing.     </h6>
+        <p class="text-small addons-limit-popup-text">
+  To setup your theme, your activation key is required.
+        </p>
+
+   <div class="accordion-item">
+        <div class="accordion-header">
+            <button class="text-small addons-limit-popup-text accordion-button">‣ How to Activate </button>
+        </div>
+        <div class="accordion-content">
+          <p class="text-small addons-limit-popup-text">
+                1. Go to the <strong>"Theme Settings"</strong> section in the Shopify Customizer.</br>
+                2. Look for <strong>"Activation"</strong>.</br>
+                3. Enter your unique <strong>"License Key"</strong> provided to you during your purchase.</br>
+                4. Hit <strong>Save</strong>.</br>
+            </p>  
+        </div>
+    </div>
+        
+    
+        
+        <p class="text-small addons-limit-popup-note">If you encounter any difficulties during the activation process, please don't hesitate to reach out to our support team at support@premiumservice.com.</p>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+<script>
+  const accordionHeader = document.querySelector('.accordion-header');
+  const accordionContent = document.querySelector('.accordion-content');
+
+  accordionHeader.addEventListener('click', () => {
+    accordionHeader.classList.toggle('act-open');
+    accordionContent.style.display = accordionHeader.classList.contains('act-open') ? 'block' : 'none';
+  });
+</script>
+

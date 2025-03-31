@@ -1,0 +1,64 @@
+{% comment %}
+ ░▒▓███████▓▒░▒▓████████▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░ 
+░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
+░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░        
+ ░▒▓██████▓▒░░▒▓██████▓▒░ ░▒▓████████▓▒░▒▓█▓▒▒▓███▓▒░▒▓█▓▒▒▓███▓▒░░▒▓██████▓▒░  
+       ░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
+       ░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
+░▒▓███████▓▒░░▒▓████████▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░  
+                                                A THEME THATS UNLIKE ANY OTHER 
+{% endcomment %}
+
+{% comment %}{%- if request.design_mode -%}{% endcomment %}
+{% if 1 == 2 %}
+  <div id="AddonsLimitReachedPopup" class="toast">
+    <div class="card welcome-popup">
+      <div class="card-header">
+        <div class="toast-image">
+          {%- render "svg-definitions" -%}
+        </div>
+
+        <div class="top-toast">
+        <h6 class="spacer-bottom-none">
+         Welcome To SEAGGS
+        </h6>
+          
+        </div>
+      </div>
+
+      <div class="card-body">
+          <h6 class="text-small addons-limit-popup-text">
+    Your website has been pack'd a punched.    </h6>
+        <p class="text-small addons-limit-popup-text">
+  Go crazy, go wild, create the website of your dreams.
+        </p>
+
+   <div class="accordion-item">
+        <div class="accordion-header">
+            <button class="text-small addons-limit-popup-text accordion-button">‣ How to Customize Theme </button>
+        </div>
+        <div class="accordion-content">
+          <p class="text-small addons-limit-popup-text">
+              Go visit our documentation here to break down your website.
+            </p>  
+        </div>
+    </div>
+        
+    
+        
+        <p class="text-small addons-limit-popup-note">If you encounter any difficulties during the activation process, please don't hesitate to reach out to our support team at support@premiumservice.com.</p>
+                <button class="editor-btn">Start Editing - {{ shop.name }}</button>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+<script>
+  const accordionHeader = document.querySelector('.accordion-header');
+  const accordionContent = document.querySelector('.accordion-content');
+
+  accordionHeader.addEventListener('click', () => {
+    accordionHeader.classList.toggle('active');
+    accordionContent.style.display = accordionHeader.classList.contains('active') ? 'block' : 'none';
+  });
+</script>

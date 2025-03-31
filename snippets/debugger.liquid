@@ -1,0 +1,124 @@
+
+<div class="page-debugger">
+  <div>
+    <h3>Store Info</h3>
+    <p><strong>Store Name:</strong> {{ shop.name | default: 'N/A' }}</p>
+    <p><strong>Store URL:</strong> {{ shop.url | default: 'N/A' }}</p>
+    <p><strong>Store Currency:</strong> {{ shop.currency | default: 'N/A' }}</p>
+    <p><strong>Store Email:</strong> {{ shop.email | default: 'N/A' }}</p>
+  </div>
+  
+  <div>
+    <h3>Page Info</h3>
+    <p><strong>Page Title:</strong> {{ page.title | default: 'N/A' }}</p>
+    <p><strong>Page Description:</strong> {{ page.description | default: 'N/A' }}</p>
+    <p><strong>Page Handle:</strong> {{ page.handle | default: 'N/A' }}</p>
+    <p><strong>Page URL:</strong> {{ page.url | default: 'N/A' }}</p>
+  </div>
+
+  {% if template.name == 'product' %}
+    <div>
+      <h3>Product Info</h3>
+      <p><strong>Product Title:</strong> {{ product.title | default: 'N/A' }}</p>
+      <p><strong>Product Handle:</strong> {{ product.handle | default: 'N/A' }}</p>
+      <p><strong>Product ID:</strong> {{ product.id | default: 'N/A' }}</p>
+      <p><strong>Product Type:</strong> {{ product.type | default: 'N/A' }}</p>
+      <p><strong>Product Price:</strong> {{ product.price | money | default: 'N/A' }}</p>
+      <p><strong>Product Vendor:</strong> {{ product.vendor | default: 'N/A' }}</p>
+      <p><strong>Product Available:</strong> {{ product.available | default: 'N/A' }}</p>
+    </div>
+  {% endif %}
+
+  {% if template.name == 'collection' %}
+    <div>
+      <h3>Collection Info</h3>
+      <p><strong>Collection Title:</strong> {{ collection.title | default: 'N/A' }}</p>
+      <p><strong>Collection Handle:</strong> {{ collection.handle | default: 'N/A' }}</p>
+      <p><strong>Collection ID:</strong> {{ collection.id | default: 'N/A' }}</p>
+      <p><strong>Collection Description:</strong> {{ collection.description | default: 'N/A' }}</p>
+      <p><strong>Collection Products Count:</strong> {{ collection.products_count | default: 'N/A' }}</p>
+    </div>
+  {% endif %}
+
+  <div>
+    <h3>Cart Info</h3>
+    <p><strong>Cart Item Count:</strong> {{ cart.item_count | default: 'N/A' }}</p>
+    <p><strong>Cart Total Price:</strong> {{ cart.total_price | money | default: 'N/A' }}</p>
+  </div>
+
+  {% if customer %}
+    <div>
+      <h3>Customer Info</h3>
+      <p><strong>Customer First Name:</strong> {{ customer.first_name | default: 'N/A' }}</p>
+      <p><strong>Customer Last Name:</strong> {{ customer.last_name | default: 'N/A' }}</p>
+      <p><strong>Customer Email:</strong> {{ customer.email | default: 'N/A' }}</p>
+      <p><strong>Customer Tags:</strong> {{ customer.tags | default: 'N/A' }}</p>
+    </div>
+  {% endif %}
+
+  <div>
+    <h3>Theme Info</h3>
+    <p><strong>Theme Name:</strong> {{ theme.name | default: 'N/A' }}</p>
+    <p><strong>Theme ID:</strong> {{ theme.id | default: 'N/A' }}</p>
+    <p><strong>Theme Version:</strong> {{ theme.version | default: 'N/A' }}</p>
+  </div>
+
+  <div>
+    <h3>Shopify Environment</h3>
+    <p><strong>Shopify Preview:</strong> {{ theme.preview | default: 'N/A' }}</p>
+    <p><strong>Shopify Development Store:</strong> {{ theme.development | default: 'N/A' }}</p>
+    <p><strong>In Design Mode:</strong> {{ request.design_mode | default: 'N/A' }}</p>
+  </div>
+
+  {% if product.metafields.custom.meta_key %}
+    <div>
+      <h3>Metafields</h3>
+      <p><strong>Namespace and Key:</strong> {{ product.metafields.custom.meta_key | default: 'N/A' }}</p>
+      <p><strong>Metafield Value:</strong> {{ product.metafields.custom.meta_key.value | default: 'N/A' }}</p>
+      <p><strong>Metafield Type:</strong> {{ product.metafields.custom.meta_key.type | default: 'N/A' }}</p>
+    </div>
+  {% endif %}
+    <div class="debug-credit">
+  <span class="debug-title">SHOPIFY DEBUGGER</span><br>
+    <span class="debug-title">by IMMOTI studios</span>
+</div>
+</div>
+
+<script>
+                      // Get the draggable element
+  var draggableDiv = document.querySelector('.page-debugger');
+
+  var offsetX, offsetY;
+
+  // Function to handle mouse down event
+  function handleMouseDown(e) {
+    // Get the current mouse position
+    offsetX = e.clientX - draggableDiv.getBoundingClientRect().left;
+    offsetY = e.clientY - draggableDiv.getBoundingClientRect().top;
+
+    // Add mouse move and mouse up event listeners
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }
+
+  // Function to handle mouse move event
+  function handleMouseMove(e) {
+    // Calculate the new position of the draggable element
+    var newX = e.clientX - offsetX;
+    var newY = e.clientY - offsetY;
+
+    // Set the new position
+    draggableDiv.style.left = newX + 'px';
+    draggableDiv.style.top = newY + 'px';
+  }
+
+  // Function to handle mouse up event
+  function handleMouseUp() {
+    // Remove mouse move and mouse up event listeners
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  }
+
+  // Add mouse down event listener to the draggable element
+  draggableDiv.addEventListener('mousedown', handleMouseDown);
+</script>

@@ -1,0 +1,18 @@
+{%- if settings.sg_quick_view -%}
+  {%- if type == "container" -%}
+    <div id="QuickViewContainer"
+         class="sg sg-quick_view{% if settings.sg_quick_view_hide_mobile %} small--hide{% endif %}"></div>
+  {%- else -%}
+    <div class="sg sg-quick_view">
+      <!-- Quick view button -->
+      <div class="grid-product__badge-{{ settings.icon_placement }}{% if settings.sg_quick_view_hide_mobile %} small--hide{% endif %}">
+        <button class="qv-icon btn btn-reveal-primary btn-square-xsmall"
+                data-product-handle="{{ product.handle }}">
+          <span class="btn__text">
+            <span class="{{ settings.icon }}">remove_red_eye</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
+{%- endif -%}
