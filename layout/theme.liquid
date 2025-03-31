@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="{{ shop.locale }}">
+  <head>
+    <style>
+      /* Apply Neue Montreal to interactive buttons */
+      .zoom-btn,
+      .add-to-cart,
+      .remove-from-cart,
+      .product-popup__button,
+      .cart__remove-button,
+      .product-form__submit,
+      .product__add-button,
+      .btn {
+        font-family: 'NeueMontreal', sans-serif !important;
+      }
+    </style>
+        {% if settings.enable_websensepro_font %}
+  <style>
+    @font-face {
+      font-family: 'NeueMontreal';
+      src: url('{{ "NeueMontreal-Regular.woff2" | asset_url }}') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Apply Neue Montreal globally, but keep icons safe */
+    html, body, input, textarea, select, button,
+    .site-nav__link,
+    .dropdown-link,
+    .mobile-nav__link,
+    .header__menu-item,
+    .header__submenu .link,
+    .drawer-menu__item,
+    *:not(.material-icons):not(.material-icons-outlined):not(.material-icons-round):not(.material-icons-sharp):not(.material-icons-two-tone) {
+      font-family: 'NeueMontreal', sans-serif !important;
+    }
+  </style>
+{% endif %}
+
+    <!-- Basic page needs -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,shrink-to-fit=no">
+    <meta name="theme-color" content="{{ settings.i_notch }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="author" content="SEAGGS">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
+  <script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script>
+  <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link href="images/webclip.png" rel="apple-touch-icon"><!--  Dragula CSS  -->
+  <link rel="stylesheet" href="https://unpkg.com/dragula/dist/dragula.min.css">
+
+    <!-- Preconnect external resources -->
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    <link rel="preconnect" href="https://shop.app" crossorigin>
+    <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">
+
+    {%- if content_for_layout contains "product-template" -%}
+      <link rel="preconnect" href="https://godog.shopifycloud.com">
+
+      {%- if settings.enable_payment_button -%}
+        <link rel="preconnect" href="https://pay.google.com" crossorigin>
+        <link rel="preconnect" href="https://play.google.com" crossorigin>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if content_for_layout contains "featured-video" -%}
+      <link rel="preconnect" href="https://www.youtube.com">
+    {%- endif -%}
+
+    {%- if content_for_layout contains "map" -%}
+      <link rel="preconnect" href="https://maps.googleapis.com">
+    {%- endif -%}
+
+    {%- if request.page_type == "contact" or request.page_type == "product" or request.page_type == "captcha" -%}
+      <link rel="preconnect" href="https://www.google.com">
+      <link rel="preconnect" href="https://www.gstatic.com">
+      <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link rel="preconnect" href="https://www.recaptcha.net" crossorigin>
+    {%- endif -%}
+    
+  <script src="{{ 'special-load.js' | asset_url }}"></script>
+
+
+    {%- liquid
+      assign accent_family = settings.accent_family
+      assign base_family = settings.base_family
+      assign header_family = settings.header_family
+      assign base_family_bold = base_family | font_modify: "weight", "bolder"
+      assign base_family_italic = base_family | font_modify: "style", "italic"
+      assign base_family_bold_italic = base_family_bold | font_modify: "style", "italic"
+      assign accent_family_bold = accent_family | font_modify: "weight", "bolder"
+      assign icon_split = settings.icon | split: "-"
+      assign logo_family = settings.logo_family
+
+      capture icon_family
+        for icon in icon_split
+          unless forloop.last == true
+            echo icon | capitalize | append: " "
+          else
+            echo icon | capitalize
+          endunless
+        endfor
+      endcapture
+    -%}
+
+    {%- assign kv_background_image = settings.kv_background_image -%}
+
+    <!-- Preload assets -->
+    <link rel="preload" href="{{ "theme.scss.css" | asset_url }}" as="style">
+    <link rel="preload" href="{{ "seaggs.css" | asset_url }}" as="style">
+   <link rel="preload" href="{{ "normalize.css" | asset_url }}" as="style">
+    <link rel="preload" href="{{ "webflow.css" | asset_url }}" as="style">
+    <link rel="preload" as="font" href="{{ header_family | font_url }}" type="font/woff2" crossorigin>
+    <link rel="preload" as="font" href="{{ accent_family | font_url }}" type="font/woff2" crossorigin>
+    <link rel="preload" as="font" href="{{ base_family | font_url }}" type="font/woff2" crossorigin>
+    <link rel="preload" as="font" href="{{ settings.icon | append: ".woff2" | asset_url }}" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ "jquery-2.2.3.min.js" | asset_url }}" as="script">
+    <link rel="preload" href="{{ "theme.min.js" | asset_url }}" as="script">
+    <link rel="preload" href="{{ "lazysizes.min.js" | asset_url }}" as="script">
+    <link rel="preload" href="{{ "sg-addons.min.js" | asset_url }}" as="script">
+
+    {%- if canonical_url != blank -%}
+      <link rel="canonical" href="{{ canonical_url }}">
+    {%- endif -%}
+
+    <!-- Fav icon -->
+    {%- assign favicon_url = settings.favicon | img_url: "100x100", crop: "center" -%}
+
+    {%- if settings.favicon == blank -%}
+      {%- assign favicon_url = "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" -%}
+    {%- endif -%}
+
+    <link sizes="192x192" rel="shortcut icon" type="image/png" id="favicon" href="{{ favicon_url }}">
+
+    <!-- Title and description -->
+    <title>
+      {{ page_title }}{% if current_tags %}{%- assign meta_tags = current_tags | join: ", " -%} &ndash; {{ "general.meta.tags" | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ "general.meta.page" | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+    </title>
+
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+
+    <!-- Social meta -->
+    {%- render "social-meta-tags" -%}
+
+    <!-- CSS  -->
+    {{ "theme.scss.css" | asset_url | stylesheet_tag }}
+
+    {%- if settings.sg_delivery_date -%}
+      {{ "flatpickr.min.css" | asset_url | stylesheet_tag }}
+    {%- endif -%}
+
+    <!-- Load fonts independently to prevent rendering blocks -->
+    <style>
+      {{ accent_family | font_face: font_display: "swap" }}
+      {{ base_family | font_face: font_display: "swap" }}
+      {{ base_family_bold | font_face: font_display: "swap" }}
+      {{ base_family_italic | font_face: font_display: "swap" }}
+      {{ base_family_bold_italic | font_face: font_display: "swap" }}
+      {{ accent_family_bold | font_face: font_display: "swap" }}
+      {{ settings.about_font | font_face: font_display: "swap" }}
+
+    </style>
+
+    
+    
+    <!-- Google Tag Manager -->
+    {%- if settings.google_tag_manager_id != blank -%}
+      <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer',{{ settings.google_tag_manager_id | json }});
+      </script>
+    {%- endif -%}
+
+    
+
+    <!-- This is some motherfucking logic -->
+    {% if template == 'page.about' %}
+      <style>
+        .site-header .site-nav__link {
+          color: {{ settings.about_navbar_color }} !important;
+        }
+    
+        .site-header .site-nav__link:hover {
+          opacity: 0.8;
+        }
+      </style>
+    {% endif %}
+     <style>
+      .site-header .site-nav__link {
+      {% if request.page_type == 'product' %}
+        color: {{ settings.navbar_product_link }} !important;
+      {% elsif request.page_type == 'collection' %}
+        color: {{ settings.navbar_collection_link }} !important;
+      {% elsif template.suffix == 'contact' %}
+        color: {{ settings.navbar_contact_link }} !important;
+      {% elsif request.page_type == 'page' %}
+        color: {{ settings.navbar_page_link }} !important;
+      {% elsif request.page_type == 'account' %}
+       color: {{ settings.navbar_page_link }} !important;
+         {% elsif request.page_type == 'index' %}
+       color: {{ settings.navbar_index_link }} !important;
+      {% endif %}
+    }
+
+
+         .site-header .site-nav__link:hover {
+      {% if request.page_type == 'product' %}
+        color: {{ settings.navbar_page_link_pr_hover }} !important;
+      {% elsif request.page_type == 'collection' %}
+        color: {{ settings.navbar_page_link_c_hover }} !important;
+      {% elsif template.suffix == 'contact' %}
+        color: {{ settings.navbar_page_link_ct_hover }} !important;
+      {% elsif request.page_type == 'account' %}
+        color: {{ settings.navbar_page_link_p_hover }} !important;
+         {% elsif request.page_type == 'cart' %}
+        color: {{ settings.navbar_page_link_p_hover }} !important;
+         {% elsif request.page_type == 'index' %}
+       color: {{ settings.navbar_index_link_hover }} !important;
+      {% endif %}
+    }
+
+         {% if settings.enable_custom_cursor %}
+           {% if settings.enable_center_cursor %}
+           .wrapper, .gradient, a, .list-menu__item, button, label, .header__icon, body  {
+              cursor: url({{ settings.cursor_image | img_url: '40x40' }}) 20 20,  auto !important; 
+            }
+            
+                 a:hover {
+              cursor: url({{ settings.hover_cursor_image | img_url: '40x40' }}) 20 20,  auto !important; 
+            }
+            {% else %}
+                 .wrapper, .gradient, a, .list-menu__item, button, label, .header__icon, body  {
+              cursor: url({{ settings.cursor_image | img_url: '40x40' }}),  auto !important; 
+            }
+            
+                 a:hover {
+              cursor: url({{ settings.hover_cursor_image | img_url: '40x40' }}),  auto !important; 
+            }
+             {% endif %}
+        {% endif %}
+    
+       {% if settings.enable_border %}
+        .seaggs-btn {
+          border: 1px solid {{ settings.border_color }};
+          border-radius: {{ settings.button_border_radius }}px;
+        }
+        {% endif %}}
+
+    
+    </style>
+
+    <!-- Theme strings and settings -->
+    {%- render "translations-js" -%}
+
+    <!-- JS -->
+    {{ "jquery-2.2.3.min.js" | asset_url | script_tag }}
+
+    <script src="{{ 'theme.min.js' | asset_url }}" defer="defer"></script>
+
+    <script src="{{ 'lazysizes.min.js' | asset_url }}" async="async"></script>
+
+
+    {%- if request.page_type contains "customers/" -%}
+      {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+    {%- endif -%}
+
+    <!-- Header hook for plugins -->
+    {{ content_for_header }}
+
+    {% render 'review-head' %}
+
+    
+    {{ "fancybox.min.css" | asset_url | stylesheet_tag }}
+
+  <body id="{{ page_title | handle }}"
+        class="{% if settings.sticky_header %}sticky-header{% endif %}
+                 {% if settings.sticky_announcement_bar %}sticky-announcement_bar{% endif %}
+                 {% if settings.hero_header_desktop %}transparent-header--desktop{% endif %}
+                 {% if settings.hero_header_mobile %}transparent-header--mobile{% else %}transparent-header--no-mobile{% endif %}
+                 {% if settings.sg_menu_bar %}menu_bar--present{% endif %}
+                 {% if customer %}customer-logged-in{% endif %}
+                 template-{{ request.page_type | handle }}">
+
+    {{ "fancybox.min.js" | asset_url | script_tag }}
+
+    <!-- Google Tag Manager (noscript) -->
+    {%- if settings.google_tag_manager_id != blank -%}
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ settings.google_tag_manager_id }}"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {%- endif -%}
+    
+
+    {% comment %}
+      {%- if request.design_mode -%}
+      {% liquid render "toasts" %}
+      {%- endif -%}
+    {% endcomment %}
+    
+
+        {% if template == 'index' %}
+          
+       {% if settings.kv_bg_video != blank %}
+          <div class="video-container-side">
+            <video width="100%" height="100%" muted autoplay loop playsinline>
+              <source src="{{ settings.kv_bg_video | file_url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        {% endif %}
+
+      {%- if settings.kv_enable_overlay_pass -%}
+    <div class="side-overlay"></div>
+  {%- endif -%}
+          
+            {% endif %}
+
+
+     {% if template == 'collection' %}
+       
+       {% if settings.collection_bg_video != blank %}
+          <div class="video-container-collection">
+            <video width="100%" height="100%" muted autoplay loop playsinline>
+              <source src="{{ settings.collection_bg_video | file_url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        {% endif %}
+
+            {%- if settings.collection_enable_overlay_pass -%}
+          <div class="collection-overlay"></div>
+        {%- endif -%}
+       
+            {% endif %}
+
+    
+    {% if template == 'index' %}
+          {%- if settings.announcement_enabled -%}
+                      {%- if settings.ann_homepage_enabled -%}
+                            {% section 'AnnoucementScreen' %}
+                        {% endif %}
+            {%- endif %-%}
+     {% endif %}
+
+
+    {% if template == 'page.contact' %}
+          {%- if settings.announcement_enabled -%}
+                      {%- if settings.ann_contact_enabled -%}
+                            {% section 'AnnoucementScreen' %}
+                        {% endif %}
+            {%- endif %-%}
+     {% endif %}
+
+    {% if template == 'index' %}
+      {%- if settings.enable_pre_order -%}
+        {%- if settings.prehomepage_enabled -%}
+            {% section 'PreOrderScreen' %}
+           {%- endif %-%} 
+         {%- endif %-%}
+      {% endif %}
+
+
+    
+      {% if template == 'index' %}
+      {%- if settings.hide_header_logo -%}
+        <style>
+            .template-index .nav-container-logo {
+    display: none;
+    }
+        </style>
+         {%- endif %-%}
+      {% endif %}
+
+    {%- liquid
+      render 'hero-header'
+      if settings.cart_type == "drawer"
+        render "drawer-cart"
+      elsif settings.cart_type == "modal"
+        render "cart-modal"
+      endif
+
+      render "drawer-search"
+      render "sg-quick-view", type: "container"
+      section "sg-account-settings"
+      section "drawer-menu"
+
+    -%}
+
+   <div id="PageContainer" class="page-container">
+  <a class="visually-hidden event-focus-box" href="#mainContent">{{ "shopify.checkout.general.skip_to_content" | t }}</a>
+
+  {%- liquid
+    section "SEAGGSAnnouncement"
+    render "sg-menu-bar"
+  -%}
+
+      {% unless template == 'index' and settings.enter_enabled %}
+          {% section 'header' %}
+        {% endunless %}
+
+
+                  {% if template == 'product' %}
+       {% if settings.prod_bg_video != blank %}
+          <div class="video-container-product">
+            <video width="100%" height="100%" muted autoplay loop playsinline>
+              <source src="{{ settings.prod_bg_video | file_url }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        {% endif %}
+                   {% endif %}
+
+     
+             {% if template == 'product' %}
+                        {%- if settings.enable_prod_overlay -%}
+                          <div class="prod-overlay"></div>
+                        {%- endif -%}
+              {% endif %}
+     
+        <main id="mainContent" class="main-content fadeIn" role="main" {% if template.name == "index" and settings.enter_enabled == false %}style="margin: auto"{% endif %}>
+          
+          {%- if request.page_type == "captcha" or request.page_type == "policy" -%}
+            <div class="box">
+              <div class="wrapper">
+                <div class="grid">
+                  <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+          {%- endif -%}
+
+      
+          {% if template == 'index' %}
+            {% section 'EnterScreen' %}
+            <div class="index-sections">
+              <div class="new-wrapper">
+                {% if settings.show_kruger_grid %}
+                  {% section 'kruger-grid' %}
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+
+          
+          
+          {{ content_for_layout }}
+      
+          {%- if request.page_type == "captcha" or request.page_type == "policy" -%}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        </main>
+      
+        {% unless template == 'index' and settings.hide_footer_enter %}
+          {% section 'footer' %}
+        {% endunless %}
+      </div>
+
+  {% section 'websensepro-custom-font' %}
+
+    
+    <script
+  src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=65ca725ddbcbbbaf90f4c287"
+  type="text/javascript"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"
+></script>
+    
+
+
+ 
+
+
+    
+{% if template == 'index' %}
+<style>
+  @media screen and (max-width: 767px) {
+    .site-header {
+      display: block !important;
+    }
+  }
+  
+  {%- if settings.flip_sidemenu_location -%}
+  .new-wrapper {
+flex-direction: row-reverse;
+  }
+      {%- endif -%}
+
+</style>
+{% endif %}
+
+    <div id="custom-cursor"></div>
+
+     <script>
+document.addEventListener('mousemove', function(e) {
+  var cursor = document.getElementById('custom-cursor');
+  cursor.style.left = e.pageX + 'px';
+  cursor.style.top = e.pageY + 'px';
+});
+    </script>
+
+    <style>
+      .video-container-side {
+          position: fixed;
+          z-index: 3;
+          width: 100%;
+          height: 100%;
+          overflow: hidden; /* Ensure overflow is hidden */
+      }
+
+      .video-container-side video {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100vw; /* Full viewport width */
+          transform: translate(-50%, -50%);
+          object-fit: cover;
+      }
+     .template-index {
+       background-color: {{ settings.kv_background_color }};
+    {% if settings.kv_background_image != blank %}
+    background-image: url({{ settings.kv_background_image | img_url: 'master' }});
+    background-size: {{ settings.kv_background_size }};
+    background-repeat: {{ settings.kv_background_repeat }};
+    background-position: {{ settings.kv_background_position_x }}% {{ settings.kv_background_position_y }}%;
+    {% endif %}
+    }
+
+        .side-overlay {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, {{ settings.kv_overlay_opacity_pass }});
+          position: absolute;
+          z-index: 2;
+          }
+
+      .template-collection .page-container{
+        /* position: relative; */
+        background-color: {{ settings.collection_background_color }};
+        {% if settings.collection_background_image != blank %}
+        background-image: url({{ settings.collection_background_image | img_url: 'master' }});
+        background-size: {{ settings.collection_background_size }};
+        background-repeat: {{ settings.collection_background_repeat }};
+        background-position: {{ settings.collection_background_position_x }}% {{ settings.collection_background_position_y }}%;
+        {% endif %}
+        background-attachment: fixed;
+      }
+
+      @media screen and (max-width: 768px){
+        @supports (-webkit-touch-callout: none) {
+          .template-collection .page-container{
+            width: 100%;
+            overflow: scroll;
+            height: 100vh !important;
+            position: fixed !important;
+            margin-bottom: 100px !important;
+          }
+        }
+      }
+
+        .collection-overlay {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, {{ settings.collection_overlay_opacity_pass }});
+          position: absolute;
+          z-index: 3;
+          }
+
+       .video-container-collection {
+          position: fixed;
+          z-index: 3;
+          width: 100%;
+          height: 100%;
+          overflow: hidden; /* Ensure overflow is hidden */
+      }
+
+.video-container-collection video {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100vw; /* Full viewport width */
+          transform: translate(-50%, -50%);
+          object-fit: cover;
+      }
+    </style>
+
+   <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var grid = document.querySelector('.w-layout-grid.verticalproductgridstyle2');
+    if (!grid) return;
+
+    var items = grid.querySelectorAll('.product-item-wrapper');
+
+    // Loop through each product item wrapper and remove empty ones
+    items.forEach(function(item) {
+      if (item.classList.contains('empty')) {
+        item.remove();
+      }
+    });
+
+    // Adjust the grid columns
+    var itemCount = grid.querySelectorAll('.product-item-wrapper').length;
+    grid.style.gridTemplateColumns = 'repeat(' + itemCount + ', 1fr)';
+  });
+</script>
+
+<div id="AccountDrawer" class="drawer drawer--left overlay-content" tabindex="-1" aria-hidden="true">
+  <div class="drawer__header">
+    <div class="drawer__title">
+      <span class="{{ settings.icon }}" aria-hidden="true">account_circle</span>
+      <span class="spacer-left-xs">{{ 'customer.account.title' | t }}</span>
+    </div>
+    <div class="drawer__close">
+      <button type="button" class="btn btn-square-small drawer__close-button js-drawer-close" aria-label="Close" title="Close">
+        <span class="material-icons" aria-hidden="true">close</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="drawer__inner">
+    <ul class="mobile-nav">
+      <li class="mobile-nav__item">
+        <a href="{{ routes.account_login_url }}" class="mobile-nav__link">{{ 'layout.customer.log_in' | t }}</a>
+      </li>
+      <li class="mobile-nav__item">
+        <a href="{{ routes.account_register_url }}" class="mobile-nav__link">{{ 'layout.customer.create_account' | t }}</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+    {% render 'dev-notes' %}
+  </body>
+
+    
+</html>
