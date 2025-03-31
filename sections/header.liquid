@@ -1,0 +1,506 @@
+{%- assign nav_type = section.settings.navigation_type -%}
+{%- assign navbar_font = settings.navbar_font -%}
+
+
+<div class="header-container nav-{{ nav_type }}"
+     data-section-id="{{ section.id }}"
+     data-section-type="header-section"
+     data-template="{{ request.page_type }}">
+
+  <!-- Header -->
+  <header class="site-header flex align-center fadeIn" role="banner">
+    <div class="wrapper header-wrapper full">
+      <div class="grid grid-small flex-nowrap align-center header-grid">
+
+        <!-- left icons -->
+        <div class="grid__item large--hide flex-fill whitespace-nowrap nav-containers nav-container-left-icons">
+          <ul class="inner-nav-containers">
+            <li class="site-nav__item site-nav--open">
+              <a href="" class="site-nav__link site-nav__link--icon js-drawer-open-button-left" aria-controls="NavDrawer" aria-label="{{ 'general.drawers.navigation' | t }}" title="{{ 'general.drawers.navigation' | t }}">
+                <span class="material-icons" aria-hidden="true">menu</span>
+              </a>
+            </li>
+
+
+            {%- if settings.search_enabled -%}
+              <li class="site-nav__item">
+                <a href="/search" class="site-nav__link site-nav__link--icon js-drawer-open-button-top" aria-controls="SearchDrawer" aria-label="{{ 'general.search.title' | t }}" title="{{ 'general.search.title' | t }}">
+                  <span class="{{ settings.icon }}" aria-hidden="true">search</span>
+                </a>
+              </li>
+            {%- endif -%}
+          </ul>
+        </div>
+
+        <!-- Logo -->
+        <div class="grid__item{% if nav_type == 'center' %} large--flex-fill{% else %} large--flex-auto{% endif %} medium--flex-auto small--flex-auto nav-containers nav-container-logo">
+          <div class="inner-nav-containers">
+            {%- if request.page_type == 'index' -%}
+              <h1 class="site-header__logo flex" itemscope itemtype="http://schema.org/Organization">
+            {%- else -%}
+              <div class="site-header__logo flex" itemscope itemtype="http://schema.org/Organization">
+            {%- endif -%}
+
+              {%- liquid
+                if section.settings.logo_link
+                  assign logo_link = routes.root_url
+                else
+                  assign logo_link = '#'
+                endif
+              -%}
+
+              <a href="{{ logo_link }}" itemprop="url" class="site-header__logo-link flex{% unless section.settings.logo_link %} scroll-top{% endunless %}">
+                <meta itemprop="name" content="{{ shop.name }}">
+
+                <!-- default logo -->
+                {%- liquid
+                  if section.settings.default_logo_svg != blank
+                    assign logo_default = section.settings.default_logo_svg
+                    assign logo_default_type = 'svg'
+                  elsif section.settings.default_logo != blank
+                    assign logo_default = section.settings.default_logo
+                    assign logo_default_type = 'retina'
+                  endif
+
+                  assign logo_default_width = section.settings.logo_width
+                  assign logo_default_current_height = logo_default_width | divided_by: logo_default.aspect_ratio
+
+                  if logo_default.width < section.settings.logo_width
+                    assign logo_default_height = logo_default.width | divided_by: logo_default.aspect_ratio
+
+                    if logo_default_height > settings.height_header
+                      assign logo_default_width = settings.height_header | minus: 10 | times: logo_default.aspect_ratio | round
+                    endif
+                  elsif logo_default_current_height > settings.height_header
+                    assign logo_default_width = settings.height_header | minus: 10 | times: logo_default.aspect_ratio | round
+                  endif
+                -%}
+
+                {%- if logo_default != blank -%}
+                  <img class="default-logo imgset lazyload radius-none"
+                    {% render 'lazysizes', img: logo_default, img_type: logo_default_type, img_width: logo_default_width %}
+                    alt="{{ shop.name }}"
+                    itemprop="logo">
+                {%- else -%}
+                  <span class="default-logo">{{ shop.name }}</span>
+                {%- endif -%}
+
+                <!-- inverted logo -->
+                {%- liquid
+                  if section.settings.inverted_logo_svg != blank
+                    assign logo_inverted = section.settings.inverted_logo_svg
+                    assign logo_inverted_type = 'svg'
+                  elsif section.settings.inverted_logo != blank
+                    assign logo_inverted = section.settings.inverted_logo
+                    assign logo_inverted_type = 'retina'
+                  endif
+
+                  assign logo_inverted_width = section.settings.logo_width
+                  assign logo_inverted_current_height = logo_inverted_width | divided_by: logo_inverted.aspect_ratio
+
+                  if logo_inverted.width < section.settings.logo_width
+                    assign logo_inverted_height = logo_inverted.width | divided_by: logo_inverted.aspect_ratio
+
+                    if logo_inverted_height > settings.height_header
+                      assign logo_inverted_width = settings.height_header | minus: 10 | times: logo_inverted.aspect_ratio | round
+                    endif
+                  elsif logo_inverted_current_height > settings.height_header
+                    assign logo_inverted_width = settings.height_header | minus: 10 | times: logo_inverted.aspect_ratio | round
+                  endif
+                -%}
+
+                {%- if logo_inverted != blank -%}
+                  <img class="inverted-logo imgset lazyload radius-none"
+                  {% render 'lazysizes', img: logo_inverted, img_type: logo_inverted_type, img_width: logo_inverted_width %}
+                  alt="{{ shop.name }}">
+                {%- else -%}
+                  <span class="inverted-logo">{{ shop.name }}</span>
+                {%- endif -%}
+
+                <!-- mobile logo -->
+                {%- liquid
+                  if section.settings.mobile_logo_svg != blank
+                    assign logo_mobile = section.settings.mobile_logo_svg
+                    assign logo_mobile_type = 'svg'
+                  elsif section.settings.mobile_logo != blank
+                    assign logo_mobile = section.settings.mobile_logo
+                    assign logo_mobile_type = 'retina'
+                  endif
+
+                  assign logo_mobile_width = section.settings.logo_mobile_width
+                -%}
+
+                {%- if logo_mobile != blank -%}
+                  <img class="mobile-logo imgset lazyload radius-none"
+                  {% render 'lazysizes', img: logo_mobile, img_type: logo_mobile_type, img_width: logo_mobile_width %}
+                  alt="{{ shop.name }}">
+                {%- else -%}
+                  <span class="mobile-logo">{{ shop.name }}</span>
+                {%- endif -%}
+              </a>
+
+              {%- if request.page_type == 'index' -%}
+                </h1>
+              {%- else -%}
+                </div>
+              {%- endif -%}
+          </div>
+        </div>
+
+        <!-- Navigation menu -->
+        <div class="grid__item{% if nav_type == 'center' %} large--six-twelfths{% else %} large--flex-fill{% endif %} medium--hide small--hide nav-containers nav-container-menu">
+          <ul class="inner-nav-containers">
+            {%- render "sg-mega-menu" -%}
+
+            {%- for link in linklists[section.settings.main_menu_link_list].links -%}
+              {%- if link.links != blank -%}
+                {%- assign parent_index = forloop.index -%}
+
+                <li class="dropdown site-nav__item{% if link.active %} site-nav--active{% endif %}">
+                  <a id="MenuParentToggle-{{ parent_index }}" href="{{ link.url }}"
+                     class="dropdown-toggle site-nav__link"
+                     aria-controls="MenuParent-{{ parent_index }}"
+                     aria-haspopup="true"
+                     aria-expanded="false"
+                     {% unless request.page_type == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless %}>
+                     {{ link.title | escape }}
+                    <span class="{{ settings.icon }}" aria-hidden="true">keyboard_arrow_down</span>
+                  </a>
+
+                  <ul id="MenuParent-{{ parent_index }}" class="dropdown-menu dropdown-list-parent" aria-labelledby="MenuParentToggle-{{ parent_index }}">
+                    {%- for childlink in link.links -%}
+                      {%- if childlink.links != blank -%}
+                        {%- assign child_index = forloop.index -%}
+
+                        <!-- 2 level dropdown -->
+                        <li class="dropdown-item dropdown dropdown-item-has-grandchild">
+                          <a id="MenuChildrenToggle-{{ parent_index }}-{{ child_index }}"
+                            href="{{ childlink.url }}"
+                            class="dropdown-link dropdown-toggle site-nav__dropdown-link {% if childlink.active %}dropdown-link-active{% endif %}"
+                            aria-controls="MenuChildren-{{ parent_index }}-{{ child_index }}"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            {% unless request.page_type == 'index' %}{% if childlink.active %}aria-current="page"{% endif %}{% endunless %}>
+                            {{ childlink.title | escape }}
+                          </a>
+
+                          <ul id="MenuChildren-{{ parent_index }}-{{ child_index }}" class="dropdown-menu dropdown-menu-grandchild" aria-labelledby="MenuChildrenToggle-{{ parent_index }}-{{ child_index }}">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li class="dropdown-item">
+                                <a href="{{ grandchildlink.url }}"
+                                  class="dropdown-link{% if grandchildlink.active %} dropdown-link-active{% endif %}"
+                                  {% unless request.page_type == 'index' %}{% if grandchildlink.active %}aria-current="page"{% endif %}{% endunless %}>
+                                  {{ grandchildlink.title | escape }}
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        </li>
+                      {%- else -%}
+                        <!-- 1 level dropdown -->
+                        <li class="dropdown-item">
+                          <a href="{{ childlink.url }}"
+                            class="dropdown-link{% if childlink.active %} dropdown-link-active{% endif %}"
+                            {% if childlink.active %}aria-current="page"{% endif %}>
+                            {{ childlink.title | escape }}
+                          </a>
+                        </li>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </ul>
+                </li>
+              {%- else -%}
+                <!-- only 1 link, no dropdown -->
+                <li class="site-nav__item {% if link.active %} site-nav--active{% endif %}">
+                  <a href="{{ link.url }}"
+                    class="site-nav__link"
+                    {% unless request.page_type == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless %}>
+                    {{ link.title | escape }}
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </div>
+
+        <!-- right icons -->
+        <div class="grid__item{% if nav_type == 'left' or nav_type == 'right' %} large--flex-auto{% else %} large--flex-fill{% endif %} medium--flex-fill small--flex-fill whitespace-nowrap text-right nav-containers nav-container-right-icons">
+          <ul class="inner-nav-containers">
+            {%- if shop.customer_accounts_enabled -%}
+             <li class="site-nav__item">
+                    <div class="dropdown">
+                      <button type="button"
+                        id="HeaderAccountToggle"
+                        class="dropdown-toggle localization-toggle site-nav__link site-nav__link--icon account-link"
+                        title="{%- if customer -%}{{ 'customer.account.title' | t }}{%- else -%}{{ 'layout.customer.log_in' | t }}{%- endif -%}"
+                        aria-label="{%- if customer -%}{{ 'customer.account.title' | t }}{%- else -%}{{ 'layout.customer.log_in' | t }}{%- endif -%}"
+                        aria-controls="HeaderAccountMenu"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                        {%- if customer -%}
+                        <span class="customer-name text-small small--hide icon-middle">{{ customer.first_name | capitalize }}</span>
+                        {%- endif -%}
+                        <span class="material-icons" aria-hidden="true">account_circle</span>
+                      </button>
+
+
+
+                  <ul id="HeaderAccountMenu" class="dropdown-menu dropdown-parent" aria-labelledby="HeaderAccountToggle">
+                    {%- if customer -%}
+                      <li class="dropdown-item">
+                        <a href="{{ routes.account_url }}"
+                          class="dropdown-link{% if request.path == routes.account_url %} dropdown-link-active{% endif %}"
+                          {% if request.path == routes.account_url %}aria-current="page"{% endif %}>
+                          <span class="material-icons" icon-width">account_circle</span>
+                          {{ 'customer.account.title' | t }}
+                        </a>
+                      </li>
+
+                      <li class="dropdown-item">
+                        <a href="{{ routes.account_logout_url }}"
+                          class="dropdown-link{% if request.path == routes.account_logout_url %} dropdown-link-active{% endif %}"
+                          {% if request.path == routes.account_logout_url %}aria-current="page"{% endif %}>
+                          {{ 'layout.customer.log_out' | t }}
+                        </a>
+                      </li>
+                    {%- else -%}
+                      <li class="dropdown-item">
+                        <a href="{{ routes.account_login_url }}"
+                          class="dropdown-link{% if request.path == routes.account_login_url %} dropdown-link-active{% endif %}"
+                          {% if request.path == routes.account_login_url %}aria-current="page"{% endif %}>
+                          {{ 'layout.customer.log_in' | t }}
+                        </a>
+                      </li>
+
+                      <li class="dropdown-item">
+                        <a href="{{ routes.account_register_url }}"
+                          class="dropdown-link{% if request.path == routes.account_register_url %} dropdown-link-active{% endif %}"
+                          {% if request.path == routes.account_register_url %}aria-current="page"{% endif %}>
+                          {{ 'layout.customer.create_account' | t }}
+                        </a>
+                      </li>
+                    {%- endif -%}
+                  </ul>
+                </div>
+              </li>
+            {%- endif -%}
+
+
+            {%- if settings.show_locale_selector or settings.show_currency_selector -%}
+              {%- if settings.localization_position == 'header' or settings.localization_position == 'header_and_footer' -%}
+                <li class="site-nav__item">
+                  {%- render "localization-form", position: "header", toggle_class: "site-nav__link site-nav__link--icon" -%}
+                </li>
+              {%- endif -%}
+            {%- endif -%}
+
+            <li class="site-nav__item">
+              <a href="/cart" class="site-nav__link site-nav__link--icon cart-link js-drawer-open-button-right"
+                 aria-controls="{%- if settings.cart_type == 'drawer' or settings.cart_type == 'page' -%}CartDrawer{%- else -%}CartModal{%- endif -%}"
+                 aria-label="{{ 'layout.cart.title' | t }}"
+                 title="{{ 'layout.cart.title' | t }}">
+    
+                {%- if cart.item_count > 0 -%}
+                  <span class="cart-text-wrapper">
+                    CART<span class="cart-count">({{ cart.item_count }})</span>
+                  </span>
+                {%- endif -%}
+    
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<style>
+  .site-header a {
+    font-family: {{ settings.navbar_font.family }}, {{ settings.navbar_font.fallback_families }};
+    font-weight: {{ settings.navbar_font.weight }};
+    font-style: {{ settings.navbar_font.style }};
+  },
+
+    {{ navbar_font | font_face }}
+
+    .cart-link {
+    font-size: 1rem;
+  },
+
+    .site-nav__link--icon {
+    color: {{ settings.navbar_page_link_mobile }} !important;
+  },
+
+  
+    .account-link .{{ settings.icon }} {
+  color: white !important;
+  },
+
+    .cart-link {
+  display: flex;
+  align-items: center;
+  },
+
+    .cart-text-wrapper {
+  text-transform: uppercase;
+  },
+  
+    .cart-text-wrapper {
+  position: relative;
+  top: -6px; /* adjust until it aligns with "ABOUT" and the icon */
+  font-size: 0.95rem;
+  line-height: 1;
+  },
+  
+    @font-face {
+        font-family: 'Neue Montreal';
+        font-style: normal;
+        font-weight: 400;
+        src: url({{ 'https://cdn.shopify.com/s/files/1/0677/9856/5055/files/NeueMontreal-Regular.otf?v=1742953836' | asset_url }}) format('otf');
+      },
+
+    .material-icons,
+    .material-icons-outlined,
+    .material-icons-round,
+    .material-icons-sharp,
+    .material-icons-two-tone {
+        font-family: 'Material Icons', sans-serif !important;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+  },  
+    .cart-count {
+  margin-left: 2px;
+  },
+      
+    .account-link .material-icons {
+  color: white !important;
+  },
+
+
+  @media (max-width: 767px) {
+    .site-nav__link--icon {
+      color: {{ settings.navbar_page_link_mobile }} !important;
+    }
+  }
+</style>
+                    
+{% schema %}
+  {
+    "name": "Navbar",
+	  "class": "header-section stacked-on-top-of-content",
+    "settings": [
+      {
+      "type": "paragraph",
+      "content": "These options pertain to Mobile View and on Other Pages such as Collection, Product, Rich Text, and Contact Page."
+    },
+      {
+        "type": "header",
+        "content": "t:sections.header.settings.header__1.content"
+      },
+	    {
+        "type": "link_list",
+        "id": "main_menu_link_list",
+        "label": "t:sections.header.settings.main_menu_link_list.label",
+        "default": "main-menu"
+      },
+	    {
+        "type": "select",
+        "id": "navigation_type",
+        "label": "t:sections.header.settings.navigation_type.label",
+		    "default": "hidden",
+        "options": [
+          {
+            "value": "hidden",
+            "label": "t:sections.header.settings.navigation_type.options__5.label"
+          },
+          {
+            "value": "horizontal",
+            "label": "t:sections.header.settings.navigation_type.options__6.label"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "t:sections.header.settings.header__2.content"
+      },
+	    {
+        "type": "checkbox",
+        "id": "logo_link",
+        "label": "t:sections.header.settings.logo_link.label",
+        "default": true
+      },
+      {
+        "type": "image_picker",
+        "id": "default_logo",
+        "label": "t:sections.header.settings.default_logo.label"
+      },
+	    {
+        "type": "image_picker",
+        "id": "inverted_logo",
+        "label": "t:sections.header.settings.inverted_logo.label"
+      },
+      {
+        "type": "image_picker",
+        "id": "mobile_logo",
+        "label": "t:sections.header.settings.mobile_logo.label"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.header.settings.header__3.content",
+        "info": "t:sections.header.settings.header__3.info"
+      },
+      {
+        "type": "text",
+        "id": "default_logo_svg",
+        "label": "t:sections.header.settings.default_logo_svg.label",
+        "placeholder": "logo.svg"
+      },
+      {
+        "type": "text",
+        "id": "inverted_logo_svg",
+        "label": "t:sections.header.settings.inverted_logo_svg.label",
+        "placeholder": "logo-inverted.svg"
+      },
+      {
+        "type": "text",
+        "id": "mobile_logo_svg",
+        "label": "t:sections.header.settings.mobile_logo_svg.label",
+        "placeholder": "logo-mobile.svg"
+      },
+      {
+        "type": "header",
+        "content": "t:sections.header.settings.header__4.content",
+    		"info": "t:sections.header.settings.header__4.info"
+      },
+  	  {
+        "type": "range",
+        "id": "logo_width",
+        "label": "t:sections.header.settings.logo_width.label",
+        "min": 30,
+        "max": 200,
+        "step": 2,
+        "unit": "px",
+        "default": 200
+      },
+  	  {
+        "type": "range",
+        "id": "logo_mobile_width",
+        "label": "t:sections.header.settings.logo_mobile_width.label",
+        "min": 30,
+        "max": 150,
+        "step": 2,
+        "unit": "px",
+        "default": 100
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,388 @@
+{%- assign kv_background_image = settings.kv_background_image -%}
+{%- assign grid_logo = section.settings.grid_logo -%}
+{%- assign grid_logo_font = section.settings.grid_logo_font -%} 
+{%- assign grid_image_1 = section.settings.grid_image_1 -%}
+{%- assign grid_image_2 = section.settings.grid_image_2 -%}
+{%- assign grid_image_3 = section.settings.grid_image_3 -%}
+{%- assign grid_image_4 = section.settings.grid_image_4 -%}
+{%- assign grid_image_1_4 = section.settings.grid_image_1_4 -%}
+{%- assign grid_image_5 = section.settings.grid_image_5 -%}
+{%- assign grid_image_6 = section.settings.grid_image_6 -%}
+{%- assign grid_image_7 = section.settings.grid_image_7 -%}
+{%- assign grid_image_8 = section.settings.grid_image_8 -%}
+{%- assign grid_image_9 = section.settings.grid_image_9 -%}
+{%- assign grid_image_10 = section.settings.grid_image_10 -%}
+{%- assign view_all_collection = section.settings.view_all_collection -%}
+
+
+
+
+<section class="maincontentstyle2">
+
+
+  {%- if section.settings.display_grid_logo -%}
+ <div class="logo-wrapper">
+  {% if grid_logo != blank %}
+    {{
+      grid_logo
+      | image_url: width: grid_logo.width
+      | image_tag: class: 'grid_logo', loading: 'lazy'
+    }}
+  {% else %}
+    <h1 class="annouce_logo-shopname">{{ shop.name }}</h1>
+  {% endif %}
+</div>
+  {%- endif -%}
+  
+<div class="w-layout-blockcontainer containerstyle2" id="product-container">
+  <div class="w-layout-grid verticalproductgridstyle2 limit-10">
+        {% assign max_blocks = 10 %}
+      {% for block in section.blocks limit: max_blocks %} 
+      {% assign product_id = block.settings.product %}
+      {% assign custom_image = block.settings.image %}
+      {% assign custom_url = block.settings.url %}
+      <div class="verticialproductitem product-item-wrapper {% unless product_id %}empty{% endunless %}">
+        {% if product_id %}
+          {% assign product = all_products[product_id] %}
+          {% if product %}
+            <a href="{{ custom_url | default: product.url }}" class="verticialproductitem product-item">
+              {% if custom_image %}
+                <img src="{{ custom_image | img_url: 'grande' }}" loading="lazy" alt="{{ product.title }}" class="verticalproductimage">
+              {% else %}
+                <img src="{{ product.featured_image | img_url: 'grande' }}" loading="lazy" alt="{{ product.title }}" class="verticalproductimage">
+              {% endif %}
+              <div class="verticalproductoverlay"></div>
+            </a>
+          {% else %}
+            <!-- Debug: Product not found -->
+            <p>Product not found for ID: {{ product_id }}</p>
+          {% endif %}
+        {% else %}
+          <!-- Debug: Product ID not set for block -->
+          <p>Product ID not set for block</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+  {%- if view_all_collection -%}
+  <div class="view-all__collection">
+    <a class="view-all__grid" href="{{ view_all_collection.url }}">View All</a>
+  </div>
+{%- endif -%}
+  
+  {%- if section.settings.enable_sms_on_page -%}
+
+      <div class="earlyaccessdropdowntext">Sign Up For Early Access <span class="sorter">▼</span></div>
+    <div class="sms-area" style="display: none;">
+          {{ settings.sms__email_embed }} 
+        </div>
+    
+          {%- endif -%}
+  
+</section>
+
+
+<style>
+.logo-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+  .sms-area {
+    width: 100%;
+    background-color: {{ settings.sms_bg_color }};
+  }
+  
+.grid_logo {
+  width: {{ section.settings.logo_width }}px;
+height: auto;
+}
+
+  @media only screen and (max-width: 768px) {
+    .grid_logo {
+  width: {{ section.settings.logo_width_mobile }}px;
+}
+  }
+.maincontentstyle2 {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+      position: relative;
+}
+      
+.w-layout-blockcontainer {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+.containerstyle2 {
+  grid-column-gap: 0vh;
+  grid-row-gap: 0vh;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 16px;
+  display: flex;
+}
+
+  .annouce_logo-shopname {
+    font-family: {{ section.settings.grid_logo_font.family }}, {{ section.settings.grid_logo_font.fallback_families }};
+          font-weight: {{ section.settings.grid_logo_font.weight }};
+          font-style: {{ section.settings.grid_logo_font.style }};
+    color: {{ section.settings.logo_text_color }};
+  }
+
+  
+.logolinkagestyle2 {
+  margin-bottom: 4vh;
+}
+.logolinkagestyle2:hover {
+  opacity: .7;
+}
+.w-layout-grid {
+  grid-row-gap: 16px;
+  grid-column-gap: 16px;
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-columns: 1fr;
+  display: grid;
+}
+.verticalproductgridstyle2 {
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    grid-template-rows: auto;
+    margin-bottom: 5vh;
+}
+.verticialproductitem {
+  height: 370px;
+  position: relative;
+}
+.verticalproductoverlay {
+  z-index: 3;
+  background-color: rgba(0, 0, 0, .45);
+  display: none;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+}
+
+  .verticalproductimage {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+}
+
+.earlyaccessdropdowntext {
+  color: {{ section.settings.sign_up_color }};
+  font-family: Inter, sans-serif;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 10px;
+}
+
+  .earlyaccessdropdowntext:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .sorter {
+    font-size: .5rem;
+  }
+
+        {{ grid_logo_font | font_face }}
+
+  
+
+
+
+.w-layout-grid.verticalproductgridstyle2 {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(150px, 1fr));
+  max-width: 1200px;
+  width: 100%;
+}
+
+  {%- if section.settings.flex_grid -%}
+  #product-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  }
+    {%- endif -%}
+
+.limit-10 .verticialproductitem:nth-child(n+11) {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .limit-10 .verticialproductitem:nth-child(n+6) {
+    display: none;
+  }
+}
+
+  @media (max-width: 768px) {
+.w-layout-grid.verticalproductgridstyle2 {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+
+
+  .view-all__grid {
+    color: {{ section.settings.sign_up_color }};
+      font-family: Inter, sans-serif;
+  font-size: .7rem;
+    cursor: pointer;
+  }
+
+    .view-all__grid:hover {
+      text-decoration: underline;
+    }
+  
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the elements
+    var subscribeHeader = document.querySelector('.earlyaccessdropdowntext');
+    var smsArea = document.querySelector('.sms-area');
+    var mainContent = document.querySelector('.maincontentstyle2');
+
+    // Check if elements exist
+    if (subscribeHeader && smsArea && mainContent) {
+      // Add click event listener to the h4 element
+      subscribeHeader.addEventListener('click', function() {
+        // Toggle the display style of the sms-area div
+        if (smsArea.style.display === 'none' || smsArea.style.display === '') {
+          smsArea.style.display = 'block';
+          mainContent.style.height = 'auto'; // Set the height of .maincontentstyle2 to auto
+        } else {
+          smsArea.style.display = 'none';
+          mainContent.style.height = ''; // Reset the height of .maincontentstyle2 if needed
+        }
+      });
+    }
+  });
+</script>
+ 
+
+{% schema %}
+{
+  "name": "Kruger Grid",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "display_grid_logo",
+      "label": "Display Grid Logo",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sms_on_page",
+      "label": "Enable SMS on Page",
+      "default": true
+    },
+     {
+      "type": "checkbox",
+      "id": "flex_grid",
+      "label": "Flex Grid",
+      "default": false,
+        "info": "This will produce a temporary visual glitch on the grid at first. Press save after enabling or disabling to have go in effect."
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "label": "Logo",
+      "id": "grid_logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo Width",
+      "min": 70,
+      "max": 250,
+      "step": 2,
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Logo Width (Mobile)",
+      "min": 70,
+      "max": 200,
+      "step": 2,
+      "default": 100
+    },
+    {
+      "type": "font_picker",
+      "id": "grid_logo_font",
+      "label": "Grid Logo Font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "color",
+      "id": "logo_text_color",
+      "label": "Logo Text",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "sign_up_color",
+      "label": "Sign Up Text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Kruger Grid"
+    },
+        {
+      "type": "collection",
+      "id": "view_all_collection",
+      "label": "View All Collection",
+      "info": "Select a collection for \"View All\" to lead."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "grid_item",
+      "name": "Grid Item",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Default",
+      "category": "Custom",
+      "blocks": [
+        {
+          "type": "grid_item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

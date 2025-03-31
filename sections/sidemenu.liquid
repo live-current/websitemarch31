@@ -1,0 +1,635 @@
+{%- assign side_menu_logo = section.settings.side_menu_logo -%}
+{%- assign sidemenu_background_image = section.settings.sidemenu_background_image -%}
+
+<div class="sidemenu style-1">
+  {% if section.settings.sidemenu_bg_video != blank %}
+    <div class="video-container-side">
+      <video width="100%" height="100%" muted autoplay loop>
+        <source src="{{ section.settings.sidemenu_bg_video | file_url }}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  {% endif %}
+
+  {%- if section.settings.enable_overlay_sidemenu -%}
+    <div class="side-overlay"></div>
+  {%- endif -%}
+
+  <div class="sidemenucontents">
+    <div class="sidelogo">
+      <a href="{{ section.settings.logo_link }}" class="logolinkagestyle1">
+        {% if side_menu_logo != blank %}
+          {{ side_menu_logo | image_url: width: side_menu_logo.width | image_tag: class: 'side-logo', loading: 'lazy' }}
+        {% else %}
+          <h1 class="logo-shopname">{{ shop.name }}</h1>
+        {% endif %}
+      </a>
+    </div>
+
+    <div class="sidemenulinks">
+      <ul id="sidemenulinkss" role="list" class="sidemenucollections">
+        {% for link in linklists[section.settings.menu].links %}
+          <li>
+            <a href="{{ link.url }}" class="menulink">{{ link.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% if section.settings.enable_side_bar_scrollbar == 'enabled' %}
+  <style>
+    .sidemenu {
+      /* For WebKit browsers (Chrome, Safari) */
+      ::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      /* For Firefox */
+      scrollbar-width: none;
+    }
+    /* For Internet Explorer and Edge */
+    .sidemenu {
+      -ms-overflow-style: none;
+    }
+  </style>
+{% endif %}
+
+<style>
+
+        .sidemenu {
+    background-color: {{ settings.sidemenu_background_color }};
+    {% if section.settings.sidemenu_background_image != blank %}
+    background-image: url({{ section.settings.sidemenu_background_image | img_url: 'master' }});
+    background-size: {{ section.settings.sidemenu_background_size }};
+    background-repeat: {{ section.settings.sidemenu_background_repeat }};
+    background-position: {{ section.settings.background_position_x }}% {{ section.settings.background_position_y }}%;
+    {% endif %}
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: {{ section.settings.sidemenu_width }}vw;
+    height: 100vh;
+    margin-top: 0;
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: 300ms;
+  }
+
+
+      {%- if section.settings.enable_right_border -%}
+    .sidemenu {
+        border-right: {{ section.settings.border_thickness }}px solid {{ settings.sm_border_color }};
+        }
+      {%- endif -%}
+
+      {%- if section.settings.enable_left_border -%}
+    .sidemenu {
+        border-left: {{ section.settings.border_thickness }}px solid {{ settings.sm_border_color }};
+        }
+      {%- endif -%}
+
+    .sidemenu.style-1 {
+      position: relative;
+    }
+
+      .side-logo {
+          height: auto;
+          max-width: 250px;
+          width: {{ section.settings.logo_size }}px;
+        }
+
+      .sidemenu li a {
+          font-family: {{ settings.sidemenu_link_font.family }}, {{ settings.sidemenu_link_font.fallback_families }};
+          font-weight: {{ settings.sidemenu_link_font.weight }};
+          font-style: {{ settings.sidemenu_link_font.style }};
+        }
+
+
+
+    .sidemenulinks {
+      text-align: {{ section.settings.text_alignment }};
+      flex-direction: column;
+      flex: 1;
+      width: auto;
+      display: flex;
+      position: relative;
+      padding: 10px;
+    }
+
+       .menulink {
+      color: {{ settings.sidemenu_text_color }};
+     text-transform: {{ section.settings.menu_capitalization }};
+      font-size: {{ section.settings.sidemenu_text_size }}px;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+
+      .menulink:hover {
+      text-decoration: underline;
+    }
+
+
+      .sidemenucollections {
+      margin: 0 !important;
+      padding-left: 0;
+      line-height: 1.2;
+      text-decoration: none;
+      list-style-type: none;
+    }
+
+      .sidemenucontents {
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      display: flex;
+      position: relative;
+      z-index: 8;
+    }
+
+       .logo-shopname {
+          font-family: {{ settings.logo_font.family }}, {{ settings.logo_font.fallback_families }};
+          font-weight: {{ settings.logo_font.weight }};
+          font-style: {{ settings.logo_font.style }};
+          color: {{ settings.store_name_color }};
+          font-size: {{ section.settings.store_name_size }}px;
+          padding: 10px;
+        }
+
+       .sidemenucollections li {
+          line-height:{{ section.settings.sidemenu_line_height }};
+        }
+
+
+       .sidemenu .scrollbar {
+          scrollbar-width: {{ section.settings.scrollbar_width }};
+          scrollbar-arrow-color: {{ section.settings.scrollbar_thumb }};
+        }
+
+        .sidemenu .scrollbar-track {
+          background-color: {{ section.settings.scrollbar_color }};
+        }
+
+        .sidemenu .scrollbar-thumb {
+          background-color: {{ section.settings.scrollbar_thumb }};
+        }
+
+        .sidemenu::-webkit-scrollbar {
+          width: {{ section.settings.scrollbar_width }};
+        }
+
+        .sidemenu::-webkit-scrollbar-track {
+          background-color: {{ section.settings.scrollbar_color }};
+        }
+
+        .sidemenu::-webkit-scrollbar-thumb {
+          background-color: {{ section.settings.scrollbar_thumb }};
+        }
+
+
+      .sidemenulinks {
+      text-align: {{ section.settings.text_alignment }};
+      flex-direction: column;
+      flex: 1;
+      width: auto;
+      display: flex;
+      position: relative;
+    }
+
+
+
+      .sidemenucontents {
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      display: flex;
+      position: relative;
+    }
+
+
+       .sidelogo {
+      background-color: rgba(0, 0, 0, 0);
+      justify-content: {{ section.settings.logo_alignment }};;
+      align-items: center;
+      width: 100%;
+      height: auto;
+      display: flex;
+      margin-top: {{ section.settings.logo_-_margin_top }}vh;
+      margin-bottom: {{ section.settings.logo_-_margin_bottom }}vh;
+    }
+
+      .logolinkagestyle1 {
+      margin-bottom: 3vh;
+    }
+
+    .logolinkagestyle1:hover {
+      opacity: .7;
+    }
+
+    .logolinkagestyle1.w--current {
+      margin-bottom: 0;
+      transition: opacity .2s;
+    }
+
+    .logolinkagestyle1.w--current:hover {
+      opacity: .3;
+    }
+
+     .side-overlay {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, {{ section.settings.overlay_opacity_sidemenu }});
+          position: absolute;
+          z-index: 7;
+          }
+
+       .video-container-side {
+          position: absolute;
+          z-index: 6;
+          width: 100%;
+          height: 100%;
+          background: red;
+          overflow: hidden; /* Ensure overflow is hidden */
+      }
+
+      .video-container-side video {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100vw; /* Full viewport width */
+          transform: translate(-50%, -50%);
+          object-fit: cover;
+      }
+
+
+    {%- if section.settings.hide_sidemenu -%}
+        .sidemenu {
+      display: none !important;
+        }
+        {%- endif -%}
+
+     {%- if settings.flip_sidemenu_location -%}
+        .sidelogo {
+      display: none !important;
+        }
+
+       .sidemenu {
+      display: flex;
+      justify-content: center;
+       }
+        {%- endif -%}
+</style>
+
+{% schema %}
+{
+  "name": "Side Menu",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_sidemenu",
+      "label": "Hide Sidemenu",
+      "default": false,
+      "info": "Hides the sidemenu"
+    },
+     {
+      "type": "checkbox",
+      "id": "enable_right_border",
+      "label": "Enable Righthand Border",
+      "default": false,
+      "info": "Displays a border on the right."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_left_border",
+      "label": "Enable Lefthand Border",
+      "default": false,
+      "info": "Displays a border on the left."
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "label": "Border Thickness",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "sidemenu_width",
+      "label": "Width",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 30,
+      "unit": "vw"
+    },
+     {
+      "type": "text",
+      "id": "sidemenu_bg_video",
+      "label": "Background Video",
+      "default": "video.mp4",
+      "info": "Upload your video to files and copy and paste + .mp4 (Must be MP4 to work)"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Select Menu"
+    },
+     {
+      "type": "select",
+      "id": "menu_capitalization",
+      "label": "Menu Capitalization",
+      "options": [
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+     },
+    {
+      "type": "select",
+      "id": "logo_alignment",
+      "label": "Logo Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+     {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+     {
+      "type": "range",
+      "id": "sidemenu_text_size",
+      "label": "Text Size",
+      "min": 10,
+      "max": 42,
+      "step": 1,
+      "default": 10,
+      "unit": "px"
+    },
+     {
+      "type": "range",
+      "id": "sidemenu_line_height",
+      "label": "Line Height",
+      "min": 0,
+      "max": 5,
+      "default": 1
+    },
+     {
+      "type": "radio",
+      "id": "enable_side_bar_scrollbar",
+      "label": "Hide Side Bar Scrollbar",
+      "options": [
+        {
+          "value": "enabled",
+          "label": "Enabled"
+        },
+        {
+          "value": "disabled",
+          "label": "Disabled"
+        }
+      ],
+      "default": "disabled",
+      "info": "Hide or Show the Sidebar Scrollbar"
+    },
+    {
+      "type": "image_picker",
+      "id": "sidemenu_background_image",
+      "label": "Background Image",
+      "info": "Leave Blank To Display Background Color, make sure overlay is disabled."
+    },
+      {
+      "type": "select",
+      "id": "sidemenu_background_size",
+      "label": "Sidemenu Background Size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "auto (default)"
+        },
+        {
+          "value": "cover",
+          "label": "cover"
+        },
+        {
+          "value": "contain",
+          "label": "contain"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay_sidemenu",
+      "label": "Enable Overlay",
+        "info": "Applies A Black Overlay To Your Background Image.",
+      "default": true
+    },
+     {
+      "type": "select",
+      "id": "overlay_opacity_sidemenu",
+      "label": "Opacity",
+       "info": "Hit Save To See Your Changes",
+      "options": [
+        {
+          "value": "0.2",
+          "label": "Light"
+        },
+        {
+          "value": "0.5",
+          "label": "Medium"
+        },
+        {
+          "value": "0.8",
+          "label": "Dark"
+        }
+      ],
+      "default": "0.2"
+      },
+     {
+      "type": "range",
+      "id": "background_position_x",
+      "label": "Background Position (X)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+     {
+      "type": "range",
+      "id": "background_position_y",
+      "label": "Background Position (Y)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "sidemenu_background_repeat",
+      "label": "Sidemenu Background Repeat",
+      "options": [
+        {
+          "value": "repeat",
+          "label": "repeat (default)"
+        },
+        {
+          "value": "repeat-x",
+          "label": "repeat-x"
+        },
+        {
+          "value": "repeat-y",
+          "label": "repeat-y"
+        },
+        {
+          "value": "no-repeat",
+          "label": "no-repeat"
+        },
+        {
+          "value": "space",
+          "label": "space"
+        },
+        {
+          "value": "round",
+          "label": "round"
+        }
+      ],
+      "default": "repeat"
+    },
+     {
+      "type": "image_picker",
+      "id": "side_menu_logo",
+      "label": "Side Menu Logo",
+      "info": "Select Your Logo, Leave Blank To Display Store Name."
+    },
+     {
+      "type": "range",
+      "id": "logo_size",
+      "label": "Logo Size",
+      "min": 60,
+      "max": 230,
+      "step": 2,
+      "default": 230,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "logo_-_margin_top",
+      "label": "Logo - Top Spacing",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 0,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "logo_-_margin_bottom",
+      "label": "Logo - Bottom Spacing",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 0,
+      "unit": "vh"
+    },
+      {
+      "type": "range",
+      "id": "store_name_size",
+      "label": "Store Name Size",
+      "min": 12,
+      "max": 64,
+      "step": 1,
+      "default": 34,
+      "unit": "px"
+    },
+     {
+      "type": "url",
+      "id": "logo_link",
+      "label": "Logo Link",
+      "info": "Assign any link to your logo"
+    },
+      {
+      "type": "select",
+      "id": "scrollbar_width",
+      "label": "Scrollbar on Sidemenu",
+      "options": [
+        {
+          "value": "thin",
+          "label": "Default"
+        },
+        {
+          "value": "auto",
+          "label": "Custom"
+        }
+      ],
+      "default": "thin"
+    },
+     {
+      "type": "color",
+      "id": "scrollbar_color",
+      "label": "Scrollbar Track",
+      "default": "#000000"
+    },
+      {
+      "type": "color",
+      "id": "scrollbar_thumb",
+      "label": "Scrollbar",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sidemenu",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

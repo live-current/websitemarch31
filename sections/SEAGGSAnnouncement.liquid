@@ -1,0 +1,121 @@
+{%- assign announcement_font = section.settings.announcement_font -%} 
+
+{%- if section.settings.display_announcement_bar -%}
+ <div class="marquee-container">
+        <div class="marquee">{{ section.settings.announcement_message }}</div>
+    </div>
+{% endif %}
+       <style>
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            box-sizing: border-box;
+            background: {{ section.settings.announcement_bg }};
+            color: {{ section.settings.announcement_text }};
+            padding: 10px 0;
+            position: relative;
+        }
+
+        .marquee {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+                 {{ announcement_font | font_face }}
+
+           .marquee {
+      font-family: {{ announcement_font.family }}, {{ announcement_font.fallback_families }} !important;
+          font-weight: {{ section.settings.announcement_font.weight }};
+             font-size: {{ section.settings.font_size_desktop }}px;
+       }
+
+         
+  @media only screen and (max-width: 700px) {
+    .marquee {
+             font-size: {{ section.settings.font_size_mobile }}px;
+       }
+  }
+
+    </style>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const marquee = document.querySelector('.marquee');
+            const container = document.querySelector('.marquee-container');
+            const marqueeWidth = marquee.offsetWidth;
+            const containerWidth = container.offsetWidth;
+
+            marquee.style.paddingLeft = containerWidth + 'px';
+            marquee.style.animation = `marquee ${marqueeWidth / 100}s linear infinite`;
+
+            marquee.addEventListener('animationiteration', function() {
+                marquee.style.paddingLeft = containerWidth + 'px';
+            });
+        });
+    </script>
+    
+{% schema %}
+  {
+    "name": "SEAGGS Announcement",
+    "settings": [
+       {
+      "type": "checkbox",
+      "id": "display_announcement_bar",
+      "label": "Display Announcement Bar",
+      "default": true
+    },
+      {
+      "type": "font_picker",
+      "id": "announcement_font",
+      "label": "Announcement Font",
+      "default": "helvetica_n4"
+    },
+         {
+      "type": "range",
+      "id": "font_size_desktop",
+      "label": "Font Size (Desktop)",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font Size (Mobile)",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "announcement_message",
+      "label": "Announcement Message",
+      "default": "FREE SHIPPING ON ORDERS OVER $50",
+      "placeholder": "Enter your announcement mesasge."
+    },
+    {
+      "type": "color",
+      "id": "announcement_text",
+      "label": "Announcement Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "announcement_bg",
+      "label": "Announcement BG",
+      "default": "#000000"
+    }
+    ]
+  }
+{% endschema %}

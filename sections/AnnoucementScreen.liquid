@@ -1,0 +1,565 @@
+{% assign announcement_collection = section.settings.announcement_collection %}
+{% assign sms_bump_link = section.settings.sms_bump_link %}
+{%- assign annouce_logo = section.settings.annouce_logo -%}
+{% assign enable_image_link = section.settings.enable_image_link %}
+
+{% comment %}
+  yooo, this is my annoucement code bruh
+  you not supposed to be in here cuh
+  you can't really code mayne
+  this takes years of experience and expertise to be able to do this
+  and here you are about to run my code through chatgpt smh.
+  CANT EVEN CODE SMH
+  I really do this shit bruh.
+
+  go read some "documentation" bruh, thats where you really learn.
+  and go do some practice projects
+  or you can decipher my code which is also a really good way to do to learn.
+  but if you aint even trying to understand watcha doing
+  actually, you can add a } to any part of my code to make it super fast
+  do it in the CSS
+{% endcomment %}
+
+<div class="yessir-wrapper">
+  {%- if section.settings.enable_overlay -%}
+    <div class="annouce-overlay"></div>
+  {%- endif -%}
+
+  <div class="everything-annouce">
+    <div class="annoucement-area">
+      <div class="annoucement-nav">
+        <div class="clockarea">
+          {%- if section.settings.annouce_text -%}
+            <h3 class="preorder-h3">ANNOUCEMENTS</h3>
+          {%- endif -%}
+          {%- if section.settings.enable_time -%}
+            <iframe
+              class="no-pointer-events time-clock"
+              src="https://free.timeanddate.com/clock/i9ephx3d/n137/fs12/tct/pct/ahl/tt0/tw0/tm1"
+              frameborder="0"
+              width="187"
+              height="16"
+              allowtransparency="true"
+              style="{% if section.settings.enable_time_white %}filter: invert(1);{% endif %}"
+            ></iframe>
+          {%- endif -%}
+        </div>
+
+        <div class="logo-wrapper">
+          {% if annouce_logo != blank %}
+            {{
+              annouce_logo
+              | image_url: width: annouce_logo.width
+              | image_tag: class: 'annouce_logo__img', loading: 'lazy'
+            }}
+          {% else %}
+            <h1 class="annouce_logo-shopname">{{ shop.name }}</h1>
+          {% endif %}
+        </div>
+
+        {%- if section.settings.show_close -%}
+          <div class="announce-close">
+            <button class="announcement-close-btn" onclick="closeAnnouncement()">CLOSE</button>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+    <div class="annoucement-h-container">
+      <div class="annoucement-h">
+        <span>{{ section.settings.annouce_page_header }}</span>
+      </div>
+    </div>
+    <div class="announcement-collection">
+      {% if announcement_collection %}
+        {% assign announcement_collection_products = announcement_collection.products %}
+        <div class="announcement-collection-grid">
+          {% for product in announcement_collection_products %}
+            <div class="announcement-card">
+              <div class="announcement-card-image">
+                {% if enable_image_link %}
+                  <a href="{{ product.url }}">
+                    <img
+                      src="{{ product.featured_image | img_url: 'medium' }}"
+                      alt="{{ product.title }}"
+                    >
+                  </a>
+                {% else %}
+                  <img
+                    src="{{ product.featured_image | img_url: 'medium' }}"
+                    alt="{{ product.title }}"
+                  >
+                {% endif %}
+              </div>
+              <div class="announcement-card-content">
+                <h3 class="announcement-card-title">{{ product.title }}</h3>
+                <p class="announcement-card-description">
+                  {{ product.description | strip_html | truncate: 250 }}
+                </p>
+                <p class="announcement-card-price">{{ product.price | money }}</p>
+                <p class="annoucement-card-release-date">Release Date: {{ section.settings.release_date }}</p>
+                {% if sms_bump_link != blank %}
+                  <a href="{{ sms_bump_link }}" class="announcement-card-link">Sign Up For Text Updates</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>Please select a collection in the Annoucement screen settings.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+    .announcement-collection {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+    }
+
+    .annoucement-h-container {
+      max-width: 600px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+
+    .announce-close {
+        width: 100%;
+        display: flex;
+        justify-content: right;
+    }
+
+    .annoucement-h-container span {
+      word-wrap: break-word;
+      margin: auto;
+    }
+
+      .everything-annouce {
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+           {% if section.settings.annouce_background_image != blank %}
+        background-image: url({{ section.settings.annouce_background_image | img_url: 'master' }});
+                      background-size: {{ section.settings.annouce_background_size }};
+        background-repeat: {{ section.settings.annouce_background_size }};
+        background-position: {{ section.settings.background_position_x }}% {{ section.settings.background_position_y }}%;
+        background-attachment: fixed;
+                {% endif %}
+        }
+
+          .everything-annouce h1,
+          .everything-annouce h2,
+          .everything-annouce h3,
+          .everything-annouce h4,
+          .everything-annouce h5,
+          .everything-annouce h6,
+          .everything-annouce a,
+          .everything-annouce span,
+          .everything-annouce p,
+          .everything-annouce button,
+          .everything-annouce div,
+          .everything-annouce textarea,
+          .everything-annouce input,
+          .everything-annouce select {
+        color: {{ settings.a_text_color }};
+      }
+
+          .annouce-overlay {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, {{ section.settings.overlay_opacity }});
+          position: absolute;
+          z-index: 2;
+          }
+
+          .announcement-collection, .annoucement-h, .annoucement-area {
+            position: relative;
+            z-index: 10;
+          }
+
+          .yessir-wrapper {
+          position: relative;
+          }
+
+          .annoucement-area {
+          position: relative;
+          z-index: 3;
+          }
+      {%- if settings.announcement_enabled -%}
+       #shopify-section-AnnoucementScreen {
+        top: 0;
+      }
+      {% endif %}
+
+      #shopify-section-AnnoucementScreen {
+             width: 100%;
+            height: 100%;
+           position: fixed; /* Fix the section to the viewport */
+            top: 0;
+          left: 0;
+        z-index: 9999; /* Ensure it's on top of other content */
+          opacity: 1;
+      transition: opacity 0.5s ease-out;
+        width: 100vw;
+        font-family: system-ui;
+        background-color: {{ section.settings.announcement_color }};
+       {% if section.settings.annouce_background_image != blank %}
+        background-size: {{ section.settings.annouce_background_size }};
+        background-repeat: {{ section.settings.annouce_background_repeat }};
+        background-attachment: fixed;
+          {% endif %}
+        }
+
+         .annoucement-nav {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         width: 100%;
+         padding-left: 2rem;
+         padding-right: 2rem;
+         color: black;
+         }
+
+         .annouce-h3 {
+         text-transform: uppercase;
+         }
+
+         .annouce_logo__img {
+        width: auto;
+        max-height: 70px;
+         }
+
+         .announcement-card {
+         display: flex;
+         flex-direction: row;
+         gap: 2.5rem;
+         max-width: 800px;
+         margin: auto;
+         }
+
+         .announcement-card-title, .announcement-card-description {
+         font-size: 1rem;
+         }
+
+        .announcement-card-price {
+          font-size: 12px;
+        }
+
+      .annoucement-nav div {
+          width: 33%;
+        }
+
+      .preorder-h3 {
+        margin: 0;
+      }
+
+      .clockarea {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          gap: 0.15rem;
+        }
+
+       .no-pointer-events {
+          pointer-events: none;
+        }
+          .annoucement-h {
+         padding-top: 1rem;
+         padding-bottom: 1rem;
+         width: 100%;
+         text-align: center;
+          }
+
+         .announcement-card-title {
+         margin: 0;
+         }
+
+         .announcement-card-image img {
+         min-width: 240px;
+         max-width: 240px;
+         }
+
+         .announcement-card-link {
+         font-size: 0.725rem;
+         text-decoration: underline;
+         }
+
+         .announcement-close-btn {
+         font-size: 12px;
+         text-decoration: underline;
+         width: auto;
+         text-align: right;
+         }
+
+         .message {
+         font-size: 14px;
+         margin: 0;
+         }
+
+         .annouce-exit {
+         display: flex;
+         flex-direction: column;
+         justify-content: right;
+         }
+
+      .annoucement-card-release-date {
+        font-size: 12px;
+      }
+
+    @media (max-width: 767px) {
+    .preorder-h3 {
+      font-size: 0.813rem;
+    }
+  }
+
+     @media (max-width: 767px) {
+    .annoucement-h {
+      width: 80%;
+      margin: auto;
+    }
+  }
+
+     @media (max-width: 767px) {
+    .announcement-card {
+      flex-direction: column;
+      align-items: center;
+      width: 80%;
+      margin: auto;
+    }
+  }
+
+    @media (max-width: 767px) {
+    .announcement-collection-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5vh;
+    }
+  }
+
+
+     @media (max-width: 767px) {
+      .everything-annouce {
+      padding-top: 0;
+    }
+  }
+
+     @media (max-width: 767px) {
+    .time-clock {
+      display: none;
+    }
+  }
+
+     @media (max-width: 767px) {
+    .logo-wrapper {
+      flex-grow: 2;
+    }
+  }
+
+    @media (max-width: 767px) {
+      .annoucement-nav div {
+        width: auto;
+      }
+
+      .annoucement-nav .announce-close{
+        right: 30px;
+        position: fixed;
+      }
+    }
+
+     @media (max-width: 767px) {
+     .announcement-close-btn {
+       width: 90px;
+      text-align: right;
+    }
+  }
+
+      @media (max-width: 767px) {
+     .clockarea {
+       display: none;
+    }
+  }
+</style>
+
+<script>
+  function closeAnnouncement() {
+    var element = document.getElementById('shopify-section-AnnoucementScreen');
+    element.style.opacity = '0';
+    setTimeout(function () {
+      element.style.display = 'none';
+    }, 500); // Match the duration of the transition
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Annoucement Screen",
+  "settings": [
+    {
+      "type": "checkbox",
+      "label": "Enable Annouce Text",
+      "id": "annouce_text",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Display Clock (Black)",
+      "id": "enable_time",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Invert Clock (White)",
+      "id": "enable_time_white",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "label": "Show Close",
+      "id": "show_close",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "announcement_color",
+      "label": "Announcement Color",
+      "default": "#333333"
+    },
+    {
+      "type": "image_picker",
+      "label": "Logo",
+      "id": "annouce_logo"
+    },
+    {
+      "type": "richtext",
+      "id": "annouce_page_header",
+      "label": "Annouce Page Header",
+      "default": "<p>Release Coming Soon!</p>",
+      "info": "Display A Title Top Center"
+    },
+    {
+      "type": "collection",
+      "id": "announcement_collection",
+      "label": "Collection",
+      "info": "Select a collection that you want to showcase."
+    },
+    {
+      "type": "text",
+      "id": "release_date",
+      "label": "Release Date",
+      "default": "07/07/2010",
+      "placeholder": "You can put any date style"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_image_link",
+      "label": "Enable Image Link",
+      "default": false,
+      "info": "Turns image into a link to the product."
+    },
+    {
+      "type": "image_picker",
+      "id": "annouce_background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "select",
+      "id": "annouce_background_repeat",
+      "label": "Background Repeat",
+      "options": [
+        {
+          "value": "repeat",
+          "label": "repeat (default)"
+        },
+        {
+          "value": "repeat-x",
+          "label": "repeat-x"
+        },
+        {
+          "value": "repeat-y",
+          "label": "repeat-y"
+        },
+        {
+          "value": "no-repeat",
+          "label": "no-repeat"
+        },
+        {
+          "value": "space",
+          "label": "space"
+        },
+        {
+          "value": "round",
+          "label": "round"
+        }
+      ],
+      "default": "repeat"
+    },
+    {
+      "type": "select",
+      "id": "annouce_background_size",
+      "label": "Background Size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "auto (default)"
+        },
+        {
+          "value": "cover",
+          "label": "cover"
+        },
+        {
+          "value": "contain",
+          "label": "contain"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Enable Overlay",
+      "info": "Applies A Black Overlay To Your Background Image.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "info": "Hit Save To See Your Changes",
+      "options": [
+        {
+          "value": "0.2",
+          "label": "Light"
+        },
+        {
+          "value": "0.5",
+          "label": "Medium"
+        },
+        {
+          "value": "0.8",
+          "label": "Dark"
+        }
+      ],
+      "default": "0.2"
+    },
+    {
+      "type": "range",
+      "id": "background_position_x",
+      "label": "Background Position (X)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "background_position_y",
+      "label": "Background Position (Y)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,327 @@
+{%- assign enter_screen_logo = section.settings.enter_screen_logo -%}
+{%- assign enter_screen_menu = section.settings.enter_screen_menu.links -%}
+{%- assign background_image = section.settings.background_image -%}
+
+{%- if settings.enter_enabled -%}
+  <div class="seaggs-enterscreen">
+    {% if section.settings.enterscreen_bg_video != blank %}
+      <div class="video-container-enter">
+        <video width="100%" height="100%" muted autoplay loop playsinline>
+          <source src="{{ section.settings.enterscreen_bg_video | file_url }}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    {% endif %}
+
+    {%- if section.settings.enable_overlay_enter -%}
+      <div class="enter-overlay"></div>
+    {%- endif -%}
+    <div class="enter-screen__contents">
+      <div class="enterscreen-logo">
+        <a href="/" class="enter-logo-link">
+          {%- if enter_screen_logo != blank %}
+            {{
+              enter_screen_logo
+              | image_url: width: enter_screen_logo.width
+              | image_tag: class: 'enterscreen-logo__img', loading: 'lazy'
+            }}
+          {% else %}
+            <h1 class="enterscreen-shopname">{{ shop.name }}</h1>
+          {% endif %}
+        </a>
+      </div>
+      <div class="enterscreen-menu">
+        {%- for link in enter_screen_menu -%}
+          {{ link.title | link_to: link.url }}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+<style>
+  {{ section.settings.enter_screen_font | font_face }}
+
+
+  .seaggs-enterscreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    z-index: 500 !important;
+    background-color: {{ settings.enterscreen_background_color }};
+   {% if section.settings.enterscreen_background_image != blank %}
+   background-image: url({{ section.settings.enterscreen_background_image | img_url: 'master' }});
+    background-size: {{ section.settings.enterscreen_background_size }};
+    background-repeat: {{ section.settings.enterscreen_background_repeat }};
+      background-position: {{ section.settings.background_position_x }}% {{ section.settings.background_position_y }}%;
+      {% endif %}
+    }
+
+    .seaggs-enterscreen a {
+     color: {{ settings.enterscreen_link_color }};
+    }
+
+  .enterscreen-logo {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10vh;
+  }
+
+  .enterscreen-logo__img {
+        height: auto;
+        max-width: 250px;
+        width: {{ section.settings.enterscreen_logo_size }}px;
+     }
+
+  .enterscreen-menu {
+    width: 100%;
+     display: flex;
+    flex-direction: column;
+     text-align: center;
+    line-height: {{ section.settings.entermenu_line_height }};
+    font-size: {{ section.settings.enterscreen_text_size }}px;
+  }
+
+     .enterscreen-overlay {
+     width: 100%;
+     background: 100%;
+     }
+
+      .enter-overlay {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, {{ section.settings.overlay_opacity_enter }});
+        position: absolute;
+        z-index: 502;
+        }
+
+    .enterscreen-logo, .enterscreen-menu {
+      position: relative;
+      z-index: 15;
+    }
+
+    .video-container-enter {
+        position: absolute;
+        z-index: 501;
+        width: 100%;
+        height: 100%;
+        /* background: red; */
+        overflow: hidden; /* Ensure overflow is hidden */
+    }
+
+    .video-container-enter video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100vw; /* Full viewport width */
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+    }
+
+    .enter-screen__contents {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      z-index: 503;
+    }
+
+
+     .enterscreen-menu a {
+        font-family: {{ section.settings.enter_screen_font.family }}, {{ section.settings.enter_screen_font.fallback_families }};
+        font-weight: {{ section.settings.enter_screen_font.weight }};
+        font-style: {{ section.settings.enter_screen_font.style }};
+      }
+</style>
+
+{% schema %}
+{
+  "name": "Enter Screen",
+  "settings": [
+     {
+      "type": "paragraph",
+      "content": "More options are available in Theme Settings -> SEAGGS Extra Screens."
+    },
+    {
+        "type": "header",
+        "content": "Logo Settings"
+      },
+       {
+      "type": "image_picker",
+      "id": "enter_screen_logo",
+      "label": "Enter Screen Logo",
+      "info": "Select your logo"
+    },
+        {
+      "type": "range",
+      "id": "enterscreen_logo_size",
+      "label": "Logo Size",
+      "info": "250px Width Max",
+      "min": 60,
+      "max": 250,
+      "step": 2,
+      "default": 250,
+      "unit": "px"
+    },
+     {
+        "type": "header",
+        "content": " Menu Settings"
+      },
+    {
+      "type": "link_list",
+      "id": "enter_screen_menu",
+      "label": "Enter Screen Menu"
+    },
+         {
+        "type": "font_picker",
+        "id": "enter_screen_font",
+        "label": "Links",
+        "default": "poppins_n7"
+      },
+    {
+      "type": "range",
+      "id": "enterscreen_text_size",
+      "label": "Text Size",
+      "min": 12,
+      "max": 42,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+     {
+      "type": "range",
+      "id": "entermenu_line_height",
+      "label": "Menu Line Height",
+      "min": 1,
+      "max": 3,
+      "default": 1
+    },
+    {
+        "type": "header",
+        "content": "Background Settings"
+      },
+       {
+      "type": "text",
+      "id": "enterscreen_bg_video",
+      "label": "Background Video",
+      "default": "https://cdn.shopify.com/videos/c/o/v/2c71c953a38143e7820e2748ab024d9d.mp4",
+      "info": "Upload your video to files and copy and paste + .mp4 (Must be MP4 to work)"
+    },
+    {
+      "type": "image_picker",
+      "id": "enterscreen_background_image",
+      "label": "Background Image",
+      "info": "Leave Blank To Display Background Color"
+    },
+     {
+      "type": "select",
+      "id": "enterscreen_background_size",
+      "label": "Background Image Size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "auto (default)"
+        },
+        {
+          "value": "cover",
+          "label": "cover"
+        },
+        {
+          "value": "contain",
+          "label": "contain"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "enterscreen_background_repeat",
+      "label": "Background Image Repeat",
+      "options": [
+        {
+          "value": "repeat",
+          "label": "repeat (default)"
+        },
+        {
+          "value": "repeat-x",
+          "label": "repeat-x"
+        },
+        {
+          "value": "repeat-y",
+          "label": "repeat-y"
+        },
+        {
+          "value": "no-repeat",
+          "label": "no-repeat"
+        },
+        {
+          "value": "space",
+          "label": "space"
+        },
+        {
+          "value": "round",
+          "label": "round"
+        }
+      ],
+      "default": "repeat"
+    },
+     {
+      "type": "checkbox",
+      "id": "enable_overlay_enter",
+      "label": "Enable Overlay",
+        "info": "Applies A Black Overlay To Your Background Image.",
+      "default": true
+    },
+     {
+      "type": "select",
+      "id": "overlay_opacity_enter",
+      "label": "Opacity",
+       "info": "Hit Save To See Your Changes",
+      "options": [
+        {
+          "value": "0.2",
+          "label": "Light"
+        },
+        {
+          "value": "0.5",
+          "label": "Medium"
+        },
+        {
+          "value": "0.8",
+          "label": "Dark"
+        }
+      ],
+      "default": "0.2"
+      },
+      {
+        "type": "header",
+        "content": "Applies to Background Image"
+      },
+     {
+      "type": "range",
+      "id": "background_position_x",
+      "label": "Background Image Position (X)",
+        "info": "Move The Position Of Your Image On The X Axis (Left & Right)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+     {
+      "type": "range",
+      "id": "background_position_y",
+      "label": "Background Image Position (Y)",
+        "info": "Move The Position Of Your Image On The Y Axis (Up & Down)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

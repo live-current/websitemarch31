@@ -1,0 +1,238 @@
+{%- assign footer_links_font = section.settings.footer_links_font -%}
+
+<!-- site footer -->
+<section class="footer">
+  <div class="seaggs-footer__flex">
+    {% if section.settings.page1 != blank %}
+      <a
+        id="w-node-_9974e339-5846-c7c6-7ae9-864d8cc35af0-8cc35aec"
+        href="{{ section.settings.page1.url }}"
+        class="footerlink"
+      >
+        {{- section.settings.page1.title -}}
+      </a>
+    {% endif %}
+    {% if section.settings.page2 != blank %}
+      <a href="{{ section.settings.page2.url }}" class="footerlink">{{ section.settings.page2.title }}</a>
+    {% endif %}
+
+    {% if section.settings.page3 != blank %}
+      <a
+        id="w-node-_9974e339-5846-c7c6-7ae9-864d8cc35af7-8cc35aec"
+        href="{{ section.settings.page3.url }}"
+        class="footerlink"
+      >
+        {{- section.settings.page3.title -}}
+      </a>
+    {% endif %}
+    {% if section.settings.page4 != blank %}
+      <a href="{{ section.settings.page4.url }}" class="footerlink">{{ section.settings.page4.title }}</a>
+    {% endif %}
+
+    {% if section.settings.page5 != blank %}
+      <a
+        id="w-node-_9974e339-5846-c7c6-7ae9-864d8cc35afe-8cc35aec"
+        href="{{ section.settings.page5.url }}"
+        class="footerlink"
+      >
+        {{- section.settings.page5.title -}}
+      </a>
+    {% endif %}
+
+    <div class="copyright">
+      <a href="{{ shop.url }}" class="footerlink">{{ shop.name }}</a>
+      <span class="footerlink">&copy;{{ 'now' | date: '%Y' }}</span>
+    </div>
+  </div>
+
+  <div class="seaggs-footer__flex__mobile">
+    {% if section.settings.page1mobile != blank %}
+      <a
+        id="w-node-_9974e339-5846-c7c6-7ae9-864d8cc35af0-8cc35aec"
+        href="{{ section.settings.page1mobile.url }}"
+        class="footerlink"
+      >
+        {{- section.settings.page1.title -}}
+      </a>
+    {% endif %}
+    {% if section.settings.page2mobile != blank %}
+      <a href="{{ section.settings.page2.url }}" class="footerlink">{{ section.settings.page2mobile.title }}</a>
+    {% endif %}
+
+    {% if section.settings.page3mobile != blank %}
+      <a
+        id="w-node-_9974e339-5846-c7c6-7ae9-864d8cc35af7-8cc35aec"
+        href="{{ section.settings.page3mobile.url }}"
+        class="footerlink"
+      >
+        {{- section.settings.page3.title -}}
+      </a>
+    {% endif %}
+
+    <div class="copyright">
+      <a href="{{ shop.url }}" class="footerlink">{{ shop.name }}</a>
+      <span class="footerlink">&copy;{{ 'now' | date: '%Y' }}</span>
+    </div>
+  </div>
+</section>
+
+<style>
+    .footer {
+      background-color: {{ settings.footer_background_color }};
+      padding: 16px;
+      margin: auto;
+    }
+
+      {{ footer_links_font | font_face }}
+
+
+     .footer a {
+      color: {{ settings.footer_text_color }};
+    }
+
+    .copyright {
+      display: flex;
+      justify-content: space-between;
+    }
+
+
+
+    .copyright span {
+      color: {{ settings.footer_text_color }};
+    }
+
+
+    .footerlink {
+    color: #000;
+    text-transform: uppercase;
+    font-family: {{ footer_links_font.family }} !important;
+    font-size: .8rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .footerlink a:hover {
+    text-decoration: underline;
+  }
+
+     .seaggs-footer__flex {
+      display: flex;
+      justify-content: space-between;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+
+    .seaggs-footer__flex__mobile {
+       display: flex;
+      justify-content: space-between;
+    }
+
+     {%- if section.settings.enable_top_border -%}
+        .footer {
+        border-top: {{ section.settings.border_thickness }}px solid {{ settings.f_border_color }};
+        }
+      {%- endif -%}
+
+        .seaggs-footer__flex__mobile {
+        display: none;
+      }
+
+      @media (max-width: 767px) {
+        .seaggs-footer__flex__mobile {
+         display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+      }
+
+      .seaggs-footer__flex {
+        display: none;
+      }
+
+      @media (min-width: 768px) {
+        .seaggs-footer__flex {
+          display: block;
+        }
+      }
+</style>
+
+{% schema %}
+{
+  "name": "t:sections.footer.name",
+  "class": "footer-section",
+  "settings": [
+    {
+    "type": "checkbox",
+    "id": "enable_top_border",
+    "label": "Enable Top Border",
+    "default": false,
+    "info": "Displays a border on the right."
+  },
+  {
+    "type": "range",
+    "id": "border_thickness",
+    "label": "Border Thickness",
+    "min": 1,
+    "max": 5,
+    "step": 1,
+    "default": 1,
+    "unit": "px"
+  },
+     {
+    "type": "font_picker",
+    "id": "footer_links_font",
+    "label": "Footer Links Font",
+    "default": "helvetica_n4"
+  },
+    {
+      "type": "header",
+      "content": "Footer Links"
+    },
+    {
+    "type": "page",
+    "id": "page1",
+    "label": "Link"
+  },
+  {
+    "type": "page",
+    "id": "page2",
+    "label": "Link"
+  },
+  {
+    "type": "page",
+    "id": "page3",
+    "label": "Link"
+  },
+  {
+    "type": "page",
+    "id": "page4",
+    "label": "Link"
+  },
+  {
+    "type": "page",
+    "id": "page5",
+    "label": "Link"
+  },
+     {
+      "type": "header",
+      "content": "Footer Links (Mobile)"
+    },
+     {
+    "type": "page",
+    "id": "page1mobile",
+    "label": "Link"
+  },
+     {
+    "type": "page",
+    "id": "page2mobile",
+    "label": "Link"
+  },
+     {
+    "type": "page",
+    "id": "page3mobile",
+    "label": "Link"
+  },
+      ]
+    }
+{% endschema %}

@@ -1,0 +1,364 @@
+{%- assign drawer_menu_font = section.settings.drawer_menu_font -%} 
+
+<div id="NavDrawer" class="drawer {% if section.settings.drawer_animation == 'left' %}
+    drawer--left
+  {% elsif section.settings.drawer_animation == 'top' %}
+    drawer--top
+  {% elsif section.settings.drawer_animation == 'bottom' %}
+  drawer--bottom
+  {% endif %} overlay-content" data-section-id="{{ section.id }}" data-section-type="drawer-menu-section" aria-hidden="true" tabindex="-1">
+  <div class="drawer__header">
+    <div class="drawer__title">
+      <span class="{{ settings.icon }}"
+            {% if section.settings.hide_menu_icon %}hidden{% endif %}
+            aria-hidden="true">
+                {%- if section.settings.title != blank -%}
+          {{ section.settings.title }}
+        {%- else -%}
+            </span>
+
+      <span {% unless section.settings.hide_menu_icon %}class="spacer-left-xs"{% endunless %}>
+          {{ 'general.drawers.navigation' | t }}
+        {%- endif -%}
+      </span>
+    </div>
+    <div class="drawer__close">
+      <button type="button" class="btn btn-square-small drawer__close-button js-drawer-close preme-close"  aria-label="{{ 'general.drawers.close_menu' | t }}" title="{{ 'general.drawers.close_menu' | t }}">
+        <span class="material-icons" aria-hidden="true">close</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="drawer__inner drawer-left__inner">
+    {%- if section.settings.drawer_top_link_list -%}
+    <div class="drawer__inner-section">
+      <ul class="mobile-nav">
+        {%- for link in linklists[section.settings.drawer_top_link_list].links -%}
+        {%- if link.links != blank -%}
+        <li class="mobile-nav__item">
+          <div class="mobile-nav__has-sublist">
+            <a href="{{ link.url }}"
+               class="mobile-nav__link {% if section.settings.drawer_link_toggle %}mobile-nav__toggle-link{% endif %}"
+               id="Label-{{ forloop.index }}"
+               {% unless request.page_type == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless %}>{{ link.title | escape }}</a>
+            <div class="mobile-nav__toggle">
+              <button type="button" class="btn btn-square-small mobile-nav__toggle-btn" aria-controls="Linklist-{{ forloop.index }}" aria-expanded="false">
+                <span class="mobile-nav__toggle-open" aria-label="{{ 'general.drawers.expand_submenu' | t }} {{ link.title | escape }}" title="{{ 'general.drawers.expand_submenu' | t }} {{ link.title | escape }}">
+                  <span class="{{ settings.icon }}" aria-hidden="true">add</span>
+                </span>
+                <span class="mobile-nav__toggle-close" aria-label="{{ 'general.drawers.collapse_submenu' | t }} {{ link.title | escape }}" title="{{ 'general.drawers.collapse_submenu' | t }} {{ link.title | escape }}">
+                  <span class="{{ settings.icon }}" aria-hidden="true">remove</span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <ul class="mobile-nav__sublist" id="Linklist-{{ forloop.index }}" aria-labelledby="Label-{{ forloop.index }}" role="navigation">
+            {%- assign parent_index = forloop.index -%}
+            {%- for childlink in link.links -%}
+            {%- if childlink.links != blank -%}
+            <li class="mobile-nav__item">
+              <div class="mobile-nav__has-sublist">
+                <a
+                   href="{{ childlink.url }}"
+                   class="mobile-nav__link {% if section.settings.drawer_link_toggle %}mobile-nav__toggle-link{% endif %}"
+                   id="Label-{{ parent_index }}-{{ forloop.index }}"
+                   {% unless request.page_type == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless %}>
+                  {{ childlink.title }}
+                </a>
+                <div class="mobile-nav__toggle">
+                  <button type="button" class="btn btn-square-small mobile-nav__toggle-btn" aria-controls="Linklist-{{ parent_index }}-{{ forloop.index }}" aria-expanded="false">
+                    <span class="mobile-nav__toggle-open" aria-label="{{ 'general.drawers.expand_submenu' | t }} {{ childlink.title | escape }}" title="{{ 'general.drawers.expand_submenu' | t }} {{ childlink.title | escape }}">
+                      <span class="{{ settings.icon }}" aria-hidden="true">add</span>
+                    </span>
+                    <span class="mobile-nav__toggle-close" aria-label="{{ 'general.drawers.collapse_submenu' | t }} {{ childlink.title | escape }}" title="{{ 'general.drawers.collapse_submenu' | t }} {{ childlink.title | escape }}">
+                      <span class="{{ settings.icon }}" aria-hidden="true">remove</span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <ul class="mobile-nav__sublist mobile-nav__subsublist" id="Linklist-{{ parent_index }}-{{ forloop.index }}" aria-labelledby="Label-{{ parent_index }}-{{ forloop.index }}" role="navigation">
+                {%- for grandchildlink in childlink.links -%}
+                <li class="mobile-nav__item">
+                  <a
+                     href="{{ grandchildlink.url }}"
+                     class="mobile-nav__link"
+                     {% unless request.page_type == 'index' %}{% if grandchildlink.active %}aria-current="page"{% endif %}{% endunless %}>
+                    {{ grandchildlink.title | escape }}
+                  </a>
+                </li>
+                {%- endfor -%}
+              </ul>
+            </li>
+            {%- else -%}
+            <li class="mobile-nav__item">
+              <a
+                 href="{{ childlink.url }}"
+                 class="mobile-nav__link"
+                 {% unless request.page_type == 'index' %}{%- if childlink.active -%}aria-current="page"{% endif %}{% endunless %}>
+                {{ childlink.title | escape }}
+              </a>
+            </li>
+            {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </li>
+        {%- else -%}
+        <li class="mobile-nav__item">
+          <a href="{{ link.url }}"
+             class="mobile-nav__link"
+             {% unless request.page_type == 'index' %}{% if link.active %}aria-current="page"{% endif %}{% endunless %}>
+            {{ link.title | escape }}
+          </a>
+        </li>
+        {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+    {%- endif -%}
+
+    {%- if section.settings.drawer_bottom_link_list -%}
+    <div class="drawer__inner-section">
+      <ul class="mobile-nav">
+        {%- for link in linklists[section.settings.drawer_bottom_link_list].links -%}
+        <li class="mobile-nav__item mobile-nav__item--secondary"><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </div>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.show_social_medias -%}
+  <div class="drawer__footer">
+    {%- render 'social-medias' -%}
+  </div>
+  {%- endif -%}
+</div>
+<div class="overlay-backdrop overlay-drawer"></div>
+
+<style>
+        {{ drawer_menu_font | font_face }}
+
+  .mobile-nav__link, .mobile-nav__item a, .drawer__title span {
+      font-family: {{ drawer_menu_font.family }}, {{ drawer_menu_font.fallback_families }} !important;
+          font-weight: {{ section.settings.drawer_menu_font.weight }};
+      text-transform: {{ section.settings.menu_capitalization }};
+       }
+
+  
+  .drawer__inner {
+  overflow-y: auto;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+/* Hide scrollbar for webkit browsers (Chrome, Safari) */
+.drawer__inner::-webkit-scrollbar {
+  display: none;
+}
+
+  #NavDrawer {
+    height: {{ section.settings.height }}%;
+    width: {{ section.settings.width }}%;
+    border-bottom-right-radius: {{ section.settings.bottom_left_radius }}px;
+  }
+
+  {%- if section.settings.special_effects and section.settings.glass_frost_effect == 'frost' -%}
+    .overlay-content {
+    background: #ffffff0a !important;
+    backdrop-filter: blur({{ section.settings.blur_intensity }}px);
+    -webkit-backdrop-filter: blur({{ section.settings.blur_intensity }}px);
+    }
+{%- endif -%}
+
+
+   {%- if section.settings.special_effects and section.settings.glass_frost_effect == 'dark-frost' -%}
+    .overlay-content {
+    background: #000000a6 !important;
+    backdrop-filter: blur({{ section.settings.blur_intensity }}px);
+    -webkit-backdrop-filter: blur({{ section.settings.blur_intensity }}px);
+    }
+{%- endif -%}
+
+  .mobile-nav__link, .drawer__title span {
+    color: {{ settings.drawer_link }} !important;
+  }
+
+  .mobile-nav__item--secondary {
+  color: {{ settings.sec_drawer_link }} !important;
+  }
+
+  .drawer__close-button:hover {
+    opacity: 0.8;
+  }
+
+  .preme-close {
+    width: 24px !important;
+    height: 24px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+  }
+  
+</style>
+
+{% schema %}
+  {
+    "name": "t:sections.drawer_menu.name",
+	  "class": "drawer-menu-section",
+    "settings": [
+	    {
+        "type": "checkbox",
+        "id": "drawer_link_toggle",
+        "label": "t:sections.drawer_menu.settings.toggle_submenu_on_links.label",
+		    "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_social_medias",
+        "label": "t:sections.drawer_menu.settings.show_social_medias.label",
+		    "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_menu_icon",
+        "label": "t:sections.drawer_menu.settings.hide_menu_icon.label",
+        "default": true
+      },
+      {
+      "type": "checkbox",
+      "id": "special_effects",
+      "label": "Special Effects",
+      "default": false,
+      "info": "Allows the usage of Glass Frost effect."
+    },
+    {
+      "type": "select",
+      "id": "glass_frost_effect",
+      "label": "Glass Frost Effect",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "frost",
+          "label": "Frost"
+        },
+          {
+          "value": "dark-frost",
+          "label": "Dark Frost"
+        }
+      ],
+      "default": "default"
+    },
+       {
+      "type": "range",
+      "id": "blur_intensity",
+      "label": "Blur Intensity",
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "default": 20,
+    },
+           {
+      "type": "paragraph",
+      "content": "Some values may cause bugs."
+    },
+      {
+      "type": "font_picker",
+      "id": "drawer_menu_font",
+      "label": "Menu Font",
+      "default": "helvetica_n4"
+    },
+      {
+      "type": "select",
+      "id": "menu_capitalization",
+      "label": "Menu Capitalization",
+      "options": [
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+     },
+      {
+      "type": "range",
+      "id": "bottom_left_radius",
+      "label": "Bottom Left Radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height",
+      "min": 30,
+      "max": 100,
+      "step": 1,
+      "default": 100,
+      "unit": "%"
+    },
+      {
+      "type": "range",
+      "id": "width",
+      "label": "Width",
+      "min": 60,
+      "max": 100,
+      "step": 1,
+      "default": 100,
+      "unit": "%"
+    },
+       {
+      "type": "radio",
+      "id": "drawer_animation",
+      "label": "Drawer Animation",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "left",
+      "info": "Changes the direction of the drawer entry."
+    },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "t:sections.drawer_menu.settings.title.label",
+        "default": "Menu"
+      },
+      {
+        "type": "link_list",
+        "id": "drawer_top_link_list",
+        "label": "t:sections.drawer_menu.settings.top_link_list.label",
+        "default": "main-menu"
+      },
+      {
+        "type": "link_list",
+        "id": "drawer_bottom_link_list",
+        "label": "t:sections.drawer_menu.settings.bottom_link_list.label",
+        "default": "footer"
+      }
+    ]
+  }
+{% endschema %}

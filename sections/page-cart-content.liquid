@@ -1,0 +1,24 @@
+{%- render "cart-page", cart: cart -%}
+
+
+ <style>
+   .cart__checkout {
+     background: black;
+     color: white;
+   }
+
+    .cart__checkout:hover {
+     background: transparent !important;
+     color: black !important;
+    cursor: pointer;
+      border: 1px solid black !important;
+   }
+   
+ </style>
+{% schema %}
+{
+  "name": "t:sections.page_cart_content.name",
+  "settings": []
+}
+{% endschema %}
+

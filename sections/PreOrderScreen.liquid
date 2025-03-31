@@ -1,0 +1,837 @@
+{% assign preorder_collection = section.settings.preorder_collection %}
+{%- assign preorder_logo = section.settings.preorder_logo -%}
+
+{% comment %}
+  yooo, this is my preorderment code bruh
+  you not supposed to be in here cuh
+  you can't really code mayne
+  this takes years of experience and expertise to be able to do this
+  and here you are about to run my code through chatgpt smh.
+  CANT EVEN CODE SMH
+  I really do this shit bruh.
+
+  go read some "documentation" bruh, thats where you really learn.
+  and go do some practice projects
+  or you can decipher my code which is also a really good way to do to learn.
+  but if you aint even trying to understand watcha doing
+  actually, you can add a } to any part of my code to make it super fast
+  do it in the CSS
+{% endcomment %}
+
+<div class="yessir-wrapper">
+  {%- if section.settings.enable_overlay -%}
+    <div class="preorder-overlay"></div>
+  {%- endif -%}
+
+  <div class="everything-preorder">
+    <div class="preorder-area">
+      <div class="preorder-nav">
+        <div class="clockarea">
+          {%- if section.settings.preorder_text -%}
+            <h3 class="preorder-h3">Pre-Order</h3>
+          {%- endif -%}
+          {%- if section.settings.enable_time -%}
+            <iframe
+              class="no-pointer-events"
+              src="https://free.timeanddate.com/clock/i9ephx3d/n137/fs12/tct/pct/ahl/tt0/tw0/tm1"
+              frameborder="0"
+              width="187"
+              height="16"
+              allowtransparency="true"
+              style="{% if section.settings.enable_time_white %}filter: invert(1);{% endif %}"
+            ></iframe>
+          {%- endif -%}
+        </div>
+
+        <div class="logo-wrapper">
+          {% if preorder_logo != blank %}
+            {{
+              preorder_logo
+              | image_url: width: preorder_logo.width
+              | image_tag: class: 'preorder_logo__img', loading: 'lazy'
+            }}
+          {% else %}
+            <h1 class="preorder_logo-shopname">{{ shop.name }}</h1>
+          {% endif %}
+        </div>
+
+        <div class="preorder-exit">
+          {%- if section.settings.show_close -%}
+            <button class="preorder-close-btn" onclick="closepreorder()">CLOSE</button>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="pre-order__status">
+        <div class="order-date">
+          <span>{{ section.settings.order_date }}</span>
+          <span class="preinfo">ORDER TIMEFRAME</span>
+        </div>
+        <div class="production-date">
+          <span>{{ section.settings.production_date }}</span>
+          <span class="preinfo">EST. PRODUCTION</span>
+        </div>
+        <div class="ship-date">
+          <span>{{ section.settings.ship_date }}</span>
+          <span class="preinfo">EST. SHIPPING</span>
+        </div>
+      </div>
+
+      {%- if section.settings.enable_preo_disclaimer -%}
+        <div class="preorder-p">
+          <span>Pre-Order Disclaimer:</span>
+          <p>{{ section.settings['pre-order_disclaimer'] }}</p>
+        </div>
+      {%- endif -%}
+
+      <div class="preorder-collection">
+        {% if preorder_collection %}
+          {% assign preorder_collection_products = preorder_collection.products %}
+          <div class="preorder-collection-grid">
+            {% for product in preorder_collection_products %}
+              <div class="preorder-card">
+                <div class="preorder-card-image">
+                  <div class="preorder-card-image-wrapper">
+                    <img
+                      src="{{ product.featured_image | img_url: 'medium' }}"
+                      alt="{{ product.title }}"
+                      {% if product.tags contains 'shipped' %}
+                        class="preorder-card-image-shipped"
+                      {% endif %}
+                    >
+                    {% if product.tags contains 'inproduction' %}
+                      <div class="preorder-card-overlay">IN-PRODUCTION</div>
+                    {% elsif product.tags contains 'shipped' %}
+                      <div class="preorder-card-overlay preorder-card-overlay-shipped">SHIPPED</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="preorder-card-content">
+                  <h3 class="preorder-card-title">{{ product.title }}</h3>
+                  <p class="preorder-card-description">
+                    {{ product.description | strip_html | truncate: 140 }}
+                  </p>
+                  <p class="preorder-card-price">{{ product.price | money }}</p>
+
+                  {% if product.available and template != 'password' %}
+                    <a href="{{ product.url }}" class="preorder-card-link">Buy Now</a><br>
+                  {% elsif product.available == false %}
+                    <span class="preorder-card-sold-out">SOLD OUT</span><br>
+                  {% endif %}
+
+                  <a href="#" class="sms-modal-trigger">Sign Up For Text Updates</a>
+
+                  <div id="smsModal" class="sms-modal">
+                    <div class="sms-modal-content">
+                      <span class="sms-modal-close">&times;</span>
+                      <h2>{{ section.settings.headline }}</h2>
+                      {% if settings.sms__email_embed != blank %}
+                        {{ settings.sms__email_embed }}
+                      {% else %}
+                        <p>SMS Coming Soon</p>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  {% if product.tags contains 'inproduction' %}
+                    <p class="preorder-statuschkr">Status: <span class="preinfo">IN-PRODUCTION</span></p>
+                  {% elsif product.tags contains 'shipped' %}
+                    <p class="preorder-statuschkr">Status: <span class="preinfo">SHIPPED</span></p>
+                  {% elsif product.tags contains 'delayed' %}
+                    <p class="preorder-statuschkr delayed">
+                      Status: <span class="preinfo">DELAYED - Contact for more info</span>
+                    </p>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>Please select a collection in the Preorder screen settings.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Get all the modal elements
+  var smsModals = document.querySelectorAll(".sms-modal");
+  // Get all the links that open the modals
+  var modalTriggers = document.querySelectorAll(".sms-modal-trigger");
+  // Get all the <span> elements that close the modals
+  var closeBtns = document.querySelectorAll(".sms-modal-close");
+
+  // Open the modal with fade-in effect
+  function openModal(modal) {
+    modal.style.display = 'block';
+    setTimeout(function() {
+      modal.style.opacity = '1';
+    }, 50);
+  }
+
+  // Close the modal with fade-out effect
+  function closeModal(modal) {
+    modal.style.opacity = '0';
+    setTimeout(function() {
+      modal.style.display = 'none';
+    }, 300);
+  }
+
+  // Close the announcement bar
+  function closepreorder() {
+    var element = document.getElementById('shopify-section-PreOrderScreen');
+    closeModal(element);
+  }
+
+  // When the user clicks on a link, open the corresponding modal
+  modalTriggers.forEach(function(trigger, index) {
+    trigger.onclick = function(e) {
+      e.preventDefault();
+      openModal(smsModals[index]);
+    }
+  });
+
+  // When the user clicks on <span> (x), close the corresponding modal
+  closeBtns.forEach(function(btn, index) {
+    btn.onclick = function() {
+      closeModal(smsModals[index]);
+    }
+  });
+
+  // When the user clicks anywhere outside of a modal, close it
+  window.onclick = function(event) {
+    smsModals.forEach(function(modal) {
+      if (event.target == modal) {
+        closeModal(modal);
+      }
+    });
+  }
+</script>
+
+<style>
+
+      .sms-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+      }
+
+    .sms-modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+    }
+
+      .sms-modal-trigger {
+        font-size: 12px;
+        text-decoration: underline;
+      }
+
+    .sms-modal-close {
+      color: #aaa;
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+        cursor: pointer;
+    }
+
+    .sms-modal-close:hover,
+    .sms-modal-close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+      }
+
+
+      .pre-order__status, .preorder-p {
+        max-width: 800px;
+        margin: auto;
+      }
+
+      .preorder-card {
+         display: flex;
+         flex-direction: row;
+         gap: 2.5rem;
+         max-width: 800px;
+         margin: auto;
+         }
+
+       .preorder-card-description {
+        font-size: 14px;
+        max-width: 400px;
+      }
+
+      .preorder-card-content {
+        margin-left: 3vw;
+      }
+
+      .no-pointer-events {
+        pointer-events: none;
+      }
+
+        .logo-wrapper {
+          display: flex;
+          justify-content: center;
+        }
+
+      .clockarea {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.15rem;
+      }
+
+      .delayed span {
+        color: red;
+      }
+
+      .preorder-card-price {
+        font-size: 12px;
+      }
+
+        .preorder-card-image-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+    .preorder-card-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: {{ settings.notification_text }} !important;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: blink 1.05s infinite;
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+      .preorder-nav div {
+        width: 33%;
+      }
+
+
+      .preorder-statuschkr {
+        margin: 0;
+        padding: 0;
+        font-size: 12px;
+      }
+
+      .preinfo {
+         font-weight: 700;
+      }
+
+      .preorder-card-overlay-shipped {
+      animation: none;
+    }
+
+      .preorder-card-image-shipped {
+        filter: grayscale(100%);
+      }
+
+
+      .preorder-collection {
+        max-height: 90vh; /* Set the maximum height of the collection container */
+        overflow-y: auto; /* Enable vertical scrolling if content exceeds container height */
+      }
+
+      #shopify-section-PreOrderScreen {
+        height: 100vh;
+          opacity: 1;
+      transition: opacity 0.5s ease-out;
+        width: 100vw;
+        position: fixed;
+        z-index: 11 !important;
+        font-family: system-ui;
+        background-color: {{ settings.preorder_background_color }};
+       {% if section.settings.preorder_background_image != blank %}
+        background-size: {{ section.settings.preorder_background_size }};
+        background-repeat: {{ section.settings.preorder_background_repeat }};
+        background-position: {{ section.settings.background_position_x }}% {{ section.settings.background_position_y }}%;
+        background-attachment: fixed;
+          {% endif %}
+        }
+
+      .everything-preorder {
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+        z-index: 9999;
+        {% if section.settings.preorder_background_image != blank %}
+        background-image: url({{ section.settings.preorder_background_image | img_url: 'master' }});
+             background-size: {{ section.settings.preorder_background_size }};
+        background-repeat: {{ section.settings.preorder_background_repeat }};
+        background-position: {{ section.settings.background_position_x }}% {{ section.settings.background_position_y }}%;
+        background-attachment: fixed;
+        {% endif %}
+        }
+
+          .everything-preorder h1,
+          .everything-preorder h2,
+          .everything-preorder h3,
+          .everything-preorder h4,
+          .everything-preorder h5,
+          .everything-preorder h6,
+          .everything-preorder a,
+          .everything-preorder span,
+          .everything-preorder p,
+          .everything-preorder button,
+          .everything-preorder div,
+          .everything-preorder textarea,
+          .everything-preorder input,
+          .everything-preorder select {
+          color: {{ settings.p_text_color }};
+          }
+
+          .preorder-overlay {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, {{ section.settings.overlay_opacity }});
+          position: absolute;
+          z-index: 2;
+          }
+
+          .preorder-collection {
+         padding-bottom: 17rem;
+          }
+
+          .yessir-wrapper {
+          position: relative;
+          }
+
+          .preorder-area {
+          position: relative;
+          z-index: 3;
+          }
+
+        .pre-order__status {
+          width: 100%;
+          text-align: center;
+          margin-bottom: 1rem;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          gap: 5rem;
+          padding: 2rem;
+        }
+
+      {%- if settings.enable_pre_order -%}
+     #shopify-section-PreOrderScreen {
+        top: 0;
+      }
+      {% endif %}
+
+      .preorder-p {
+        text-align: center;
+        padding-bottom: 2rem;
+         font-size: 12px;
+      }
+
+       .preorder-p span {
+        font-size: 11px;
+       text-transform: uppercase;
+       }
+
+         .preorder-nav {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         width: 100%;
+         padding-left: 2rem;
+         padding-right: 2rem;
+         color: black;
+         }
+
+         .preorder-h3 {
+          margin: 0;
+         text-transform: uppercase;
+         }
+
+         .preorder_logo__img {
+        width: auto;
+        max-height: {{ section.settings.logo_size }}px;
+         }
+
+         .preorder-card-title {
+         font-size: 1rem;
+         }
+
+          .preorder-h {
+         padding-top: 1rem;
+         width: 100%;
+         text-align: center;
+          }
+
+
+         .preorder-card-title {
+         margin: 0;
+         }
+
+         .preorder-card-image img {
+         min-width: 240px;
+         max-width: 240px;
+         }
+
+         .preorder-card-link {
+         font-size: 0.725rem;
+         text-decoration: underline;
+         }
+
+        .preorder-card-sold-out {
+          font-size: 0.725rem;
+          font-weight: 700;
+        }
+
+         .preorder-close-btn {
+         font-size: 12px;
+         text-decoration: underline;
+         width: auto;
+         text-align: right;
+         }
+
+         .message {
+         font-size: 14px;
+         margin: 0;
+         }
+
+         .preorder-exit {
+         display: flex;
+         flex-direction: column;
+         justify-content: right;
+         }
+
+      .ship-date, .production-date, .order-date {
+        display: flex;
+        flex-direction: column;
+      }
+
+       .ship-date span, .production-date span, .order-date span {
+        font-size: 12px;
+         font-weight: 700;
+      }
+
+       @media (max-width: 767px) {
+     .clockarea {
+       display: none;
+    }
+  }
+
+        @media (max-width: 767px) {
+    .logo-wrapper {
+      flex-grow: 2;
+    }
+  }
+
+       @media (max-width: 767px) {
+     .preorder-close-btn {
+       width: 90px;
+      text-align: right;
+    }
+  }
+
+        @media (max-width: 767px) {
+    .preorder-card {
+      flex-direction: column;
+      align-items: center;
+      width: 80%;
+      margin: auto;
+    }
+  }
+
+       @media (max-width: 767px) {
+    .preorder-collection-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5vh;
+    }
+  }
+
+
+         @media (max-width: 767px) {
+   .preorder-collection {
+     max-height: 500px;
+    }
+  }
+
+      @media (max-width: 767px) {
+   .pre-order__status {
+     gap: 0;
+    }
+  }
+
+       @media (max-width: 767px) {
+   .preorder-p {
+     max-width: 300px;
+    }
+  }
+</style>
+
+<script>
+  // Get all the modal elements
+  var smsModals = document.querySelectorAll(".sms-modal");
+
+  // Get all the links that open the modals
+  var modalTriggers = document.querySelectorAll(".sms-modal-trigger");
+
+  // Get all the <span> elements that close the modals
+  var closeBtns = document.querySelectorAll(".sms-modal-close");
+
+  // When the user clicks on a link, open the corresponding modal
+  modalTriggers.forEach(function(trigger, index) {
+    trigger.onclick = function(e) {
+      e.preventDefault();
+      smsModals[index].style.display = "block";
+    }
+  });
+
+  // When the user clicks on <span> (x), close the corresponding modal
+  closeBtns.forEach(function(btn, index) {
+    btn.onclick = function() {
+      smsModals[index].style.display = "none";
+    }
+  });
+
+  // When the user clicks anywhere outside of a modal, close it
+  window.onclick = function(event) {
+    smsModals.forEach(function(modal) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Pre-Order Screen",
+  "settings": [
+        {
+      "type": "checkbox",
+      "label": "Display Title",
+      "id": "preorder_text",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Display Clock (Black Only)",
+      "id": "enable_time",
+      "default": true
+    },
+  {
+      "type": "checkbox",
+      "label": "Display Close",
+      "id": "show_close",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "label": "Invert Clock (White)",
+      "id": "enable_time_white",
+      "default": true
+    },
+     {
+      "type": "image_picker",
+      "label": "Logo",
+
+      "id": "preorder_logo"
+    },
+     {
+      "type": "radio",
+      "id": "logo_size",
+      "label": "Logo Size",
+      "options": [
+        {
+          "value": "30",
+          "label": "Small"
+        },
+        {
+          "value": "50",
+          "label": "Medium"
+        },
+        {
+          "value": "70",
+          "label": "Large"
+        }
+      ],
+      "default": "50"
+    },
+     {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Subscribe",
+      "placeholder": "Subscribe"
+    },
+     {
+      "type": "checkbox",
+      "id": "enable_preo_disclaimer",
+      "label": "Enable Pre-Order Dislclaimer",
+      "default": true
+    },
+     {
+      "type": "textarea",
+      "id": "pre-order_disclaimer",
+      "label": "Pre-Order Disclaimer",
+      "default": "Enter your pre-order disclaimer and information for your drop.",
+      "placeholder": "This is a drop.",
+      "info": "Add a pre-order disclaimer to update your customers."
+    },
+     {
+      "type": "collection",
+      "id": "preorder_collection",
+      "label": "Collection",
+       "info": "Select a collection that you want to showcase."
+    },
+      {
+      "type": "text",
+      "id": "order_date",
+      "label": "Order Date",
+      "default": "June 7th, 2024",
+      "info": "Can be any format / text"
+    },
+    {
+      "type": "text",
+      "id": "production_date",
+      "label": "Production Date",
+      "default": "June 7th, 2024",
+      "info": "Can be any format / text"
+    },
+    {
+      "type": "text",
+      "id": "ship_date",
+      "label": "Ship Date",
+      "default": "June 7th, 2024",
+      "info": "Can be any format / text"
+    },
+      {
+      "type": "paragraph",
+      "content": "Assign \"inproduction\" or \"shipped\" to your products to get notification text to appear on product images. Used to keep your customers updated."
+    },
+    {
+      "type": "select",
+      "id": "preorder_background_repeat",
+      "label": "Background Repeat",
+      "options": [
+        {
+          "value": "repeat",
+          "label": "repeat (default)"
+        },
+        {
+          "value": "repeat-x",
+          "label": "repeat-x"
+        },
+        {
+          "value": "repeat-y",
+          "label": "repeat-y"
+        },
+        {
+          "value": "no-repeat",
+          "label": "no-repeat"
+        },
+        {
+          "value": "space",
+          "label": "space"
+        },
+        {
+          "value": "round",
+          "label": "round"
+        }
+      ],
+      "default": "repeat"
+    },
+    {
+      "type": "image_picker",
+      "id": "preorder_background_image",
+      "label": "Background Image"
+    },
+      {
+      "type": "select",
+      "id": "preorder_background_size",
+      "label": "Background Size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "auto (default)"
+        },
+        {
+          "value": "cover",
+          "label": "cover"
+        },
+        {
+          "value": "contain",
+          "label": "contain"
+        }
+      ],
+      "default": "auto"
+    },
+      {
+      "type": "checkbox",
+      "id": "enable_overlay",
+      "label": "Enable Overlay",
+      "default": true
+    },
+     {
+      "type": "select",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "options": [
+        {
+          "value": "0.2",
+          "label": "Light"
+        },
+        {
+          "value": "0.5",
+          "label": "Medium"
+        },
+        {
+          "value": "0.8",
+          "label": "Dark"
+        }
+      ],
+      "default": "0.2"
+      },
+     {
+      "type": "range",
+      "id": "background_position_x",
+      "label": "Background Position (X)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+     {
+      "type": "range",
+      "id": "background_position_y",
+      "label": "Background Position (Y)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

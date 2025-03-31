@@ -1,0 +1,47 @@
+<div class="cart-nav">
+  <a href="/cart" class="cartlink js-drawer-open-button-right">CART</a>
+</div>
+
+<style>
+  .cart-nav {
+  height: 40px;
+        display: flex;
+    justify-content: {{ settings.cart_alignment }};
+    background: {{ section.setting.cart_bg }};
+  }
+
+   .cartlink {
+        color: {{ settings.cart_link_color }};
+        text-transform: uppercase;
+        font-family: Inter, sans-serif;
+        font-size: {{ settings.cart_link_size }}px;
+        font-weight: 700;
+        line-height: 1;
+        text-decoration: underline;
+        margin-right: 8px;
+       position: relative;
+        z-index: 8;
+        padding: 15px;
+        justify-content: {{ settings.cart_alignment }};
+        background-color: {{ settings.cart_background }}
+     }
+
+</style>
+
+{% schema %}
+  {
+    "name": "Cart Nav",
+    "settings": [
+      {
+      "type": "paragraph",
+      "content": "Customize more options in the Theme Settings -> Cart."
+    },
+       {
+      "type": "color",
+      "id": "cart_bg",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    ]
+  }
+{% endschema %}

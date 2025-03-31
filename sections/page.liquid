@@ -1,0 +1,121 @@
+{%- assign page_header_font = section.settings.page_header_font -%}
+{%- assign page_background_image = section.settings.page_background_image -%}
+
+<div class="box">
+  <div class="wrapper">
+    <div class="grid">
+      <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+        <div class="section-header">
+          <div class="page-title-wrapper">
+            <h1 class="page-title">{{ page.title }}</h1>
+          </div>
+        </div>
+
+        {%- unless page.content == blank -%}
+          <div class="page-content rte">
+            {{ page.content }}
+          </div>
+        {%- endunless -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #mainContent {
+    {% if section.settings.page_background_image != blank %}
+      background-image: url({{ section.settings.page_background_image | img_url: 'master' }});
+      background-size: {{ section.settings.page_background_size }};
+      background-repeat: {{ section.settings.page_background_repeat }};
+      background-position: {{ section.settings.page_background_position_x }}% {{ section.settings.page_background_position_y }}%;
+    {% endif %}
+    background-color: {{ section.settings.page_background_color }};
+  }
+
+  .page-title,
+  .page-content,
+  .rte,
+  .template-page h1,
+  .template-page h2,
+  .template-page h3,
+  .template-page h4,
+  .template-page h5,
+  .template-page h6,
+  #mainContent a {
+    color: {{ section.settings.page_text_color }};
+    font-family: {{ page_header_font.family }}, sans-serif !important;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "About Page",
+  "settings": [
+    {
+      "type": "font_picker",
+      "id": "page_header_font",
+      "label": "Page Font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "image_picker",
+      "id": "page_background_image",
+      "label": "Page Background Image"
+    },
+    {
+      "type": "select",
+      "id": "page_background_size",
+      "label": "Page Background Size",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "page_background_repeat",
+      "label": "Page Background Repeat",
+      "options": [
+        { "value": "repeat", "label": "Repeat" },
+        { "value": "repeat-x", "label": "Repeat-X" },
+        { "value": "repeat-y", "label": "Repeat-Y" },
+        { "value": "no-repeat", "label": "No-repeat" },
+        { "value": "space", "label": "Space" }
+      ],
+      "default": "repeat"
+    },
+    {
+      "type": "range",
+      "id": "page_background_position_x",
+      "label": "Background Position (X)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "page_background_position_y",
+      "label": "Background Position (Y)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "page_background_color",
+      "label": "Page Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "page_text_color",
+      "label": "Page Text Color",
+      "default": "#000000"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,372 @@
+{%- assign input_and_label_font = section.settings.input_and_label_font -%}
+{%- assign page_background_image = section.settings.page_background_image -%}
+{%- assign headline_font = section.settings.headline_font -%}
+
+<div class="box">
+  <div class="wrapper">
+    <div class="grid">
+      <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+        <div class="section-header">
+          <div class="page-title-wrapper">
+            <h1 class="page-title">{{ page.title }}</h1>
+          </div>
+        </div>
+
+        {%- unless page.content == blank -%}
+          <div class="page-content rte">
+            {{ page.content }}
+          </div>
+        {%- endunless -%}
+
+        {%- form 'contact', class: 'form-vertical' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="note form-success">
+              {{ 'contact.form.post_success' | t }}
+            </p>
+          {%- endif -%}
+
+          {%- if form.errors -%}
+            {{ form.errors | default_errors }}
+          {%- endif -%}
+
+          <div class="grid grid-small">
+            <div class="grid__item large--six-twelfths">
+              <label for="ContactFormName">{{ 'contact.form.name' | t }}</label>
+              <input
+                type="text"
+                id="ContactFormName"
+                name="contact[{{ 'contact.form.name' | t }}]"
+                placeholder="{{ 'contact.form.name' | t }}"
+                autocapitalize="words"
+                autofocus="autofocus"
+                value="{%- if form.name -%}{{ form.name }}{%- elsif customer -%}{{ customer.name }}{%- endif -%}"
+              >
+            </div>
+
+            <div class="grid__item large--six-twelfths">
+              <label for="ContactFormEmail">
+                {{- 'contact.form.email' | t }}
+                <span aria-hidden="true">*</span></label
+              >
+              <input
+                type="email"
+                id="ContactFormEmail"
+                class="{%- if form.errors contains 'email' -%}input-error{%- endif -%}"
+                name="contact[email]"
+                placeholder="{{ 'contact.form.email' | t }}"
+                autocorrect="off"
+                autocapitalize="off"
+                pattern="^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$"
+                required="required"
+                aria-required="true"
+                value="{%- if form.email -%}{{ form.email }}{%- elsif customer -%}{{ customer.email }}{%- endif -%}"
+                {%- if form.errors contains 'email' -%}
+                  aria-invalid="true"
+                {%- endif -%}
+              >
+            </div>
+          </div>
+
+          <label for="ContactFormPhone">Order Number (If Applicable)</label>
+          <input
+            type="text"
+            id="ContactFormOrderNumber"
+            name="contact[order_number]"
+            placeholder="Enter your order number"
+            value="{%- if form.order_number -%}{{ form.order_number }}{%- endif -%}"
+          >
+
+          <label for="ContactFormMessage">{{ 'contact.form.message' | t }}</label>
+          <textarea
+            rows="3"
+            id="ContactFormMessage"
+            name="contact[body]"
+            placeholder="{{ 'contact.form.message' | t }}"
+          >
+              {%- if form.body -%}{{ form.body }}{%- endif -%}
+            </textarea>
+
+          <button type="submit" class="seaggs-btn">
+            <span class="btn__text">
+              {{ 'contact.form.send' | t }}
+            </span>
+          </button>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+
+    #PageContainer {
+    {% if section.settings.page_background_image != blank %}
+      background-image: url({{ section.settings.page_background_image | img_url: 'master' }});
+      background-size: {{ section.settings.page_background_size }};
+      background-repeat: {{ section.settings.page_background_repeat }};
+      background-position: {{ section.settings.page_background_position_x }}% {{ section.settings.page_background_position_y }}%;
+    {% endif %}
+    background-color: {{ section.settings.page_background_color }};
+  }
+
+    .page-content, .rte, .page-title, .template-page h1, .template-page h2, .template-page h3, .template-page h4, .template-page h5, .template-page h6 {
+      color: {{ section.settings.page_text_color }};
+    }
+
+     .page-title, .page-content, .rte, .page-title, .template-page h1, .template-page h2, .template-page h3, .template-page h4, .template-page h5, .template-page h6, #mainContent a {
+       font-family: {{ headline_font.family }}, {{ headline_font.fallback_families }} !important;
+     }
+
+
+      label, input, textarea {
+        font-family: {{ input_and_label_font.family }}, {{ input_and_label_font.fallback_families }} !important;
+        }
+
+      input, textarea {
+        border: 1px solid {{ section.settings.input_borders }};
+        color: {{ section.settings.input_text_color }} !important;
+        font-size: {{ section.settings.input_font_size }}px;
+        }
+
+        textarea:not(.disabled):not([disabled]):active {
+        background-color: {{ section.settings.input_bg_color }};
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      -ms-box-shadow: none;
+      -o-box-shadow: none;
+      box-shadow: none;
+      }
+
+    textarea:not(.disabled):not([disabled]):hover, textarea:not(.disabled):not([disabled]):focus {
+      opacity: 1;
+      background-color: {{ section.settings.input_bg_color }};
+      box-shadow: none;
+    }
+
+          textarea,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"] {
+      color: {{ section.settings.placeholder_color }};
+    }
+
+    textarea::placeholder,
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder,
+    input[type="password"]::placeholder,
+    input[type="search"]::placeholder,
+    input[type="number"]::placeholder,
+    input[type="tel"]::placeholder,
+    input[type="url"]::placeholder {
+      color: {{ section.settings.placeholder_color }};
+    }
+
+      input, textarea {
+          background-color: {{ section.settings.input_bg_color }};
+      }
+
+      label {
+        font-size: {{ section.settings.input_size_font }}px;
+        color: {{ section.settings.label_color }};
+      }
+
+      .seaggs-sub {
+          background-color: {{ section.settings.submit_color }};
+      }
+
+        .btn__text {
+              color: {{ section.settings.submit_text }};
+          }
+
+        {{ headline_font | font_face }}
+</style>
+
+{% schema %}
+{
+  "name": "SEAGGS Contact Page",
+  "settings": [
+     {
+      "type": "font_picker",
+      "id": "headline_font",
+      "label": "Page Font",
+      "default": "helvetica_n4"
+    },
+     {
+    "type": "header",
+    "content": "Page Background Image Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "page_background_image",
+      "label": "Page Background Image"
+    },
+    {
+      "type": "select",
+      "id": "page_background_size",
+      "label": "Page Background Size",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "page_background_repeat",
+      "label": "Page Background Repeat",
+      "options": [
+        {
+          "value": "repeat",
+          "label": "Repeat"
+        },
+        {
+          "value": "repeat-x",
+          "label": "Repeat-X"
+        },
+        {
+          "value": "repeat-y",
+          "label": "Repeat-Y"
+        },
+        {
+          "value": "no-repeat",
+          "label": "No-repeat"
+        },
+        {
+          "value": "space",
+          "label": "Space"
+        }
+      ],
+      "default": "repeat"
+    },
+    {
+      "type": "range",
+      "id": "page_background_position_x",
+      "label": "Background Position (X)",
+      "info": "Change The Background Image Position On The X Axis.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+     {
+      "type": "range",
+      "id": "page_background_position_y",
+      "label": "Background Position (Y)",
+       "info": "Change The Background Image Position On The Y Axis.",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+    {
+    "type": "header",
+    "content": "Page Color Settings"
+    },
+    {
+    "type": "paragraph",
+    "content": "For Transparent, Leave Color Input Blank."
+    },
+    {
+      "type": "color",
+      "id": "page_background_color",
+      "label": "Page Background Color"
+    },
+    {
+      "type": "color",
+      "id": "page_text_color",
+      "label": "Page Text Color",
+      "default": "#000000"
+    },
+      {
+      "type": "color",
+      "id": "input_borders",
+      "label": "Input Borders",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "input_size_font",
+      "label": "Label Font Size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "input_font_size",
+      "label": "Input Font Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+    "type": "header",
+    "content": "Contact Page Typography Settings"
+    },
+    {
+    "type": "paragraph",
+    "content": "Fonts And Colors Will Apply To The Contact Page Only."
+    },
+    {
+      "type": "font_picker",
+      "id": "input_and_label_font",
+      "label": "Label and Input Font",
+      "default": "helvetica_n4"
+    },
+       {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#ffffff"
+    },
+      {
+      "type": "color",
+      "id": "submit_color",
+      "label": "Submit Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "submit_text",
+      "label": "Submit Text",
+      "default": "#ffffff"
+    },
+      {
+      "type": "color",
+      "id": "input_bg_color",
+      "label": "Input BG Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Input Color",
+      "default": "#000000"
+    },
+     {
+      "type": "color",
+      "id": "placeholder_color",
+      "label": "Placeholder Color",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,852 @@
+{%- assign otheaders_font = settings.otheaders_font -%}
+{%- assign accent_font = settings.accent_font -%}
+
+<div
+  id="CollectionSection"
+  data-section-id="{{ section.id }}"
+  data-section-type="collection-template"
+  data-collection-layout="{{ section.settings.collection_layout }}"
+>
+  <div class="box">
+    <div class="wrapper">
+      {%- capture collection_header -%}
+        <div class="grid simple_collection_header">
+          <div class="grid__item large--eight-twelfths push--large--two-twelfths">
+            <div class="section-header">
+              <div class="page-title-wrapper">
+                <h1 class="page-title">{{ collection.title }}</h1>
+              </div>
+
+              {%- unless collection.description == blank -%}
+                <p class="collection-description text-lead">
+                  {{ collection.description }}
+                </p>
+              {%- endunless -%}
+            </div>
+          </div>
+        </div>
+      {%- endcapture -%}
+
+      {%- capture collection_sort -%}
+        <div class="collection-sortby flex">
+          <div class="collection-sortby-content">
+            <label class="collection-sortby-label inline-label small--full" for="sortBy">
+              <span class="{{ settings.icon }}" aria-hidden="true">sort</span>
+              {{ 'collections.sorting.title' | t }}
+              <span class="filter-dropdown__label--active"></span>
+            </label>
+
+            {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+
+            <select id="sortBy" class="collection-sortby-select select--small full" name="sort_by" aria-describedby="a11y-refresh-page-message" >
+              {%- for option in collection.sort_options -%}
+                <option value="{{ option.value }}"{% if sort_by == option.value %} selected="selected"{% endif %}>{{ option.name }}</option>
+              {%- endfor -%}
+            </select>
+          </div>
+        </div>
+      {%- endcapture -%}
+
+      {%- capture collection_layout_buttons -%}
+        <div class="collection-layout-buttons flex align-bottom">
+          <button class="collection-layout-button collection-layout-button--grid collection-layout-button--active">
+            GRID
+          </button>
+          <button class="collection-layout-button collection-layout-button--list">
+            LIST
+          </button>
+        </div>
+      {%- endcapture -%}
+
+      {%- liquid
+        if section.settings.collection_title_enable
+          if collection.handle == 'all' or collection.handle == 'frontpage'
+            echo collection_header
+          else
+            unless settings.show_hero and collection.image
+              echo collection_header
+            endunless
+          endif
+        endif
+
+        if section.settings.collection_sort_enable and collection.products.size > 0
+          assign show_collection_sort = true
+        else
+          assign show_collection_sort = false
+        endif
+
+        assign collection_layout = section.settings.collection_layout
+        assign collection_filters_icon = settings.sg_collection_filters_button_icon
+        assign collection_filters_label = 'add-ons.collection_filters.label' | t
+      -%}
+
+      {%- if collection_filters_label != blank -%}
+        {%- if collection.products.size > 0 -%}
+          <div class="grid grid-small align-center collection-controls">
+            <div class="grid__item">
+              <button
+                type="button"
+                class="js-drawer-open-button-left collection-filters-btn btn btn--small small--full"
+                aria-controls="sgCollectionFilter"
+              >
+                <span class="btn__text">
+                  {%- if collection_filters_icon -%}
+                    <span class="{{ settings.icon }} icon-width spacer-right-xs" aria-hidden="true">
+                      {{- collection_filters_icon -}}
+                    </span>
+                  {%- endif -%}
+
+                  <span>{{ collection_filters_label }}</span>
+                </span>
+              </button>
+            </div>
+
+            {%- if show_collection_sort or collection_layout == 'grid_list' -%}
+              <div class="grid__item">
+                <div class="collection-controls-wrapper">
+                  {%- if show_collection_sort -%}
+                    {{ collection_sort }}
+                  {%- endif -%}
+
+                  {%- if collection_layout == 'grid_list' -%}
+                    {{ collection_layout_buttons }}
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        {%- if collection.all_tags.size > 0 or section.settings.collection_sort_enable -%}
+          <div class="collection-filters collection-controls text-center small--text-left">
+            {%- if collection.all_tags.size > 0 -%}
+              {%- liquid
+                assign show_collection_tags = true
+
+                unless section.settings.collection_tags_enable
+                  assign show_collection_tags = false
+                endunless
+
+                if section.settings.collection_multiple_tags_filtering_enable
+                  assign tag_stack = true
+                  assign tag_collection = collection
+                else
+                  assign tag_stack = false
+                  assign tag_collection = collections[collection.handle]
+                endif
+
+                if section.settings.collection_tags_count
+                  assign tag_count = true
+                else
+                  assign tag_count = false
+                endif
+              -%}
+
+              {%- if show_collection_tags -%}
+                <div class="collection-tags spacer-bottom">
+                  {%- if section.settings.tag_selector == 'button' -%}
+                    <ul class="inline-list">
+                      <li class="collection-tag-label small--full">
+                        <span class="{{ settings.icon }}" aria-hidden="true">filter_alt</span>
+                        {{ 'collections.sorting.title_tags' | t }}
+                      </li>
+
+                      {%- liquid
+                        if tag_count
+                          assign tag_count_formatted = collection.products_count | prepend: ' (' | append: ')'
+                        else
+                          assign tag_count_formatted = ''
+                        endif
+                      -%}
+
+                      <li
+                        {% unless current_tags -%}
+                          class="tag--active tag--all"
+                        {% endunless %}
+                      >
+                        <a href="{%- if collection.url == blank -%}{{ routes.all_products_collection_url }}{%- else -%}{{ collection.url }}{%- endif -%}">
+                          {{ 'collections.general.all_of_collection' | t | append: tag_count_formatted }}
+                        </a>
+                      </li>
+
+                      {%- for tag in collection.all_tags -%}
+                        {%- liquid
+                          if tag_count
+                            assign tag_count = 0
+
+                            for product in tag_collection.products
+                              if product.tags contains tag
+                                capture tag_count
+                                  echo tag_count | plus: 1
+                                endcapture
+                              endif
+                            endfor
+
+                            assign tag_count_formatted = tag_count | prepend: ' (' | append: ')'
+                          else
+                            assign tag_count_formatted = ''
+                          endif
+                        -%}
+
+                        {%- if current_tags contains tag -%}
+                          <li class="tag--active">
+                            {{ tag | append: tag_count_formatted | link_to_remove_tag: tag }}
+                          </li>
+                        {%- else -%}
+                          {%- if tag_stack -%}
+                            {%- unless tag_count == 0 -%}
+                              <li>{{ tag | append: tag_count_formatted | link_to_add_tag: tag }}</li>
+                            {%- endunless -%}
+                          {%- else -%}
+                            <li>{{ tag | append: tag_count_formatted | link_to_tag: tag }}</li>
+                          {%- endif -%}
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </ul>
+                  {%- else -%}
+                    <label class="collection-tag-label inline-label small--full" for="filterBy">
+                      <span class="{{ settings.icon }}" aria-hidden="true">filter_alt</span>
+                      {{ 'collections.sorting.title_tags' | t }}
+                    </label>
+
+                    <select id="filterBy" class="collection-tag-select select--small small--full" name="filterBy">
+                      {%- liquid
+                        if tag_count
+                          assign tag_count_formatted = collection.products_count | prepend: ' (' | append: ')'
+                        else
+                          assign tag_count_formatted = ''
+                        endif
+                      -%}
+
+                      <option value="{%- if collection.url == blank -%}{{ routes.all_products_collection_url }}{%- else -%}{{ collection.url }}{%- endif -%}">
+                        {{ 'collections.general.all_of_collection' | t | append: tag_count_formatted }}
+                      </option>
+
+                      {%- for tag in collection.all_tags -%}
+                        {%- liquid
+                          if tag_count
+                            assign tag_count = 0
+
+                            for product in tag_collection.products
+                              if product.tags contains tag
+                                capture tag_count
+                                  echo tag_count | plus: 1
+                                endcapture
+                              endif
+                            endfor
+
+                            assign tag_count_formatted = tag_count | prepend: ' (' | append: ')'
+                          else
+                            assign tag_count_formatted = ''
+                          endif
+
+                          assign tag_url = tag | link_to_tag: tag | split: 'href="' | last | split: '"' | first
+                        -%}
+
+                        <option
+                          value="{{ tag_url }}"
+                          {% if current_tags contains tag %}
+                            selected="selected"
+                          {% endif %}
+                        >
+                          {{ tag | append: tag_count_formatted }}
+                        </option>
+                      {%- endfor -%}
+                    </select>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- if show_collection_sort or collection_layout == 'grid_list' -%}
+              <div class="collection-controls-wrapper spacer-top-lg">
+                {%- if show_collection_sort -%}
+                  {{ collection_sort }}
+                {%- endif -%}
+
+                {%- if collection_layout == 'grid_list' -%}
+                  {{ collection_layout_buttons }}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- assign limit = section.settings.desktop_grid | times: section.settings.rows -%}
+
+      <div class="collection-and-pagination-container">
+        {%- paginate collection.products by limit -%}
+          <div
+            {% if settings.sg_infinite_scroll %}
+              id="infiniteScrollContainer"
+            {% endif %}
+            class="grid grid-spacer collection-list-products{% if collection_layout == 'list' %} collection-list-products--list{% endif %}{% if collection_layout == 'grid_list' %} collection-list-products--grid-list{% endif %}"
+          >
+            {%- capture grid_item_width -%}
+              {%- render 'product-width' -%}
+            {%- endcapture -%}
+
+            {%- for product in collection.products -%}
+              {%- capture product_item -%}
+                {%- capture current -%}{% cycle 1, 2, 3, 4, 5, 6 %}{%- endcapture -%}
+
+                {%- if collection_layout == 'grid' -%}
+                  {%- render 'product-grid-item' with product as product, grid_item_width: grid_item_width, current: current -%}
+                {%- elsif collection_layout == 'list' -%}
+                  {%- render 'product-list-item' with product as product, current: current, visible: true -%}
+                {%- elsif collection_layout == 'grid_list' -%}
+                  {%- render 'product-grid-item' with product as product, grid_item_width: grid_item_width, current: current -%}
+                  {%- render 'product-list-item' with product as product, current: current -%}
+                {%- endif -%}
+              {%- endcapture -%}
+
+              {%- if settings.sg_gift_wrap -%}
+                {%- unless product.id == gift_wrap_product_id -%}
+                  {{ product_item }}
+                {%- endunless -%}
+              {%- else -%}
+                {{ product_item }}
+              {%- endif -%}
+            {%- else -%}
+              <div class="grid__item text-center">
+                <p>{{ 'collections.general.no_matches' | t }}</p>
+                <a href="{{ settings.browsing_link }}" class="seaggs-btn">
+                  {{- 'cart.general.continue_browsing_html' | t -}}
+                </a>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          {%- render 'pagination' with paginate as paginate -%}
+        {%- endpaginate -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+    .section-header h1 {
+       color: {{ section.settings.collection_color }};
+     }
+
+    {%- if section.settings.hide_product_title -%}
+      .grid-product__title {
+        display: none;
+      }
+    {%- endif -%}
+
+    {%- if section.settings.hide_product_price -%}
+      .grid-product__price {
+        display: none;
+      }
+    {%- endif -%}
+
+    {%- if section.settings.hide_all -%}
+      #CollectionSection .card-body {
+        display: none;
+      }
+    {%- endif -%}
+
+    .pagination .page.current {
+      background-color: {{ section.settings.pagination_bg_current }};
+      color: #{{ section.settings.pagination_number_color_current }} !important;
+      padding: 10px;
+    }
+
+    .pagination a {
+      background-color: {{ section.settings.pagination_bg_others }};
+      color: {{ section.settings.pagination_number_color_others }};
+    }
+
+    .pagination a:not(.disabled):not([disabled]):hover,
+    .pagination a:not(.disabled):not([disabled]):focus,
+    .pagination .page.current:not(.disabled):not([disabled]):hover,
+    .pagination .page.current:not(.disabled):not([disabled]):focus {
+      color: {{ section.settings.pagination_number_color_others }};
+      background-color: {{ section.settings.pagination_bg_others }};
+    }
+
+    .pagination a:not(.disabled):not([disabled]):hover, .pagination a:not(.disabled):not([disabled]):focus, .pagination .page.current:not(.disabled):not([disabled]):hover, .pagination .page.current:not(.disabled):not([disabled]):focus {
+      box-shadow: none;
+    }
+
+
+    .pagination a {
+      padding: 10px;
+    }
+
+  .pagination a:hover {
+    pointer-events: pointer !important;
+  }
+
+  .pagination a:hover {
+    padding: 10px;
+  }
+
+  .page-title {
+    font-family: {{ settings.otheaders_font.family }}, {{ settings.otheaders_font.fallback_families }};
+    font-weight: {{ settings.otheaders_font.weight }};
+    font-style: {{ settings.otheaders_font.style }};
+  }
+
+  {{ otheaders_font | font_face }}
+
+
+  #CollectionSection p {
+  font-family: {{ settings.accent_font.family }}, {{ settings.accent_font.fallback_families }};
+  font-weight: {{ settings.accent_font.weight }};
+  font-style: {{ settings.accent_font.style }};
+  }
+
+  {{ accent_font | font_face }}
+
+
+  .collection-controls-wrapper {
+  display: flex;
+  justify-content: {{ section.settings.sort_position }} !important;
+  }
+
+  .list-product__details-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: {{ section.settings.list_position }} !important;
+  }
+
+  .list-product__title-link {
+  color: {{ section.settings.lv_product_title }};
+  }
+
+  .list-product__details-wrapper p {
+  color: {{ section.settings.lv_product_des}};
+  }
+
+  {%- if section.settings.enable_product_image_border -%}
+  .list-product__image-link img {
+  border: 1px solid {{ section.settings.lv_border }};
+  }
+  {%- endif -%}
+
+
+  .grid-product__price span {
+  color: {{ section.settings.price_color }};
+  }
+
+  .grid-product__title {
+  color: {{ section.settings.producttit_color }};
+  }
+
+  {%- if section.settings.activate_collection_grid -%}
+    #CollectionSection .wrapper {
+      padding: 0;
+      max-width: 100%;
+    }
+
+    .list-product__wrapper {
+      padding: 0;
+    }
+
+    #CollectionSection .collection-list-products .product--image, #CollectionSection .card-body, #CollectionSection .card-footer {
+      background: {{ section.settings.prodd_bg }};
+    }
+
+    .list-product__image-link img {
+      border-top: 0 !important;
+    }
+
+    .grid-product__badge.grid-product__badge-top-left {
+      top: 50%;
+      left: 50%;
+      translate: -50%;
+    }
+
+
+    #CollectionSection .collection-list-products .grid__item {
+      padding-left: 0;
+      box-sizing: border-box;
+      border-right: 1px solid {{ section.settings.border_color }};
+    }
+
+
+    #CollectionSection .card-body {
+      border-bottom: 1px solid {{ section.settings.border_color }};
+    }
+
+    #CollectionSection .grid-product--wrapper {
+      border-bottom: 1px solid {{ section.settings.border_color }};
+    }
+
+
+    .card-footer {
+      border-bottom: 1px solid {{ section.settings.border_color }};
+    }
+
+    .list-product__details-wrapper p {
+      margin: 0;
+      border-bottom: 1px solid {{ section.settings.border_color }};
+    }
+
+    .list-product__details-wrapper .list-product__title-link {
+      margin: 0;
+      border-bottom: 0;
+    }
+
+    .grid-spacer > .grid__item {
+      margin-bottom: 0;
+    }
+
+
+    .listdesc, .list-product__price-wrap, .list-product__title  {
+      padding: 10px;
+    }
+
+    .list-product__details-wrapper {
+      border-top: 1px solid {{ section.settings.border_color }};
+    }
+
+    /* Hide on tablets (max-width: 768px) */
+    @media only screen and (max-width: 768px) {
+      .collection-filters {
+        display: none;
+      }
+    }
+
+    /* Hide on mobile devices (max-width: 480px) */
+    @media only screen and (max-width: 480px) {
+      .collection-filters {
+        display: none;
+      }
+    }
+
+    /* Hide on mobile devices (max-width: 480px) */
+    @media only screen and (max-width: 480px) {
+      #CollectionSection .collection-list-products .grid__item {
+        border-right: 1px solid;
+      }
+    }
+
+    .collection-and-pagination-container {
+      border-left: 1px solid {{ section.settings.border_color }};
+      border-top: 1px solid {{ section.settings.border_color }};
+    }
+
+    .collection-list-products .grid .grid-spacer {
+      margin-bottom: 0 !important;
+    }
+
+    .collection-list-products .grid {
+      margin: 0 !important;
+    }
+
+    .collection-and-pagination-container .grid {
+      margin-left: 0 !important;
+    }
+  {%- endif -%}
+/* Make collection page buttons white */
+  .collection-filters-btn,
+  .collection-sortby-label,
+  .collection-layout-button {
+    color: white !important;
+    border-color: white !important;
+    background-color: transparent !important;
+  }
+
+  /* Remove background on active layout button */
+  .collection-layout-button.collection-layout-button--active {
+    background-color: transparent !important;
+    color: white !important;
+  }
+
+  /* Icons inside buttons */
+  .collection-sortby-label .material-icons,
+  .collection-filters-btn .material-icons {
+    color: white !important;
+  }
+
+  /* Hide filter, sort, grid, and list buttons on mobile */
+  @media (max-width: 767px) {
+    .collection-filters-btn,
+    .collection-sortby,
+    .collection-layout-buttons {
+      display: none !important;
+    }
+  }
+  
+</style>
+
+{% schema %}
+{
+  "name": "t:sections.collection_template.name",
+  "class": "collection-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "collection_title_enable",
+      "label": "Enable collection title",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "collection_color",
+      "label": "Collection Title",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "collection_layout",
+      "label": "t:sections.collection_template.settings.collection_layout.label",
+      "info": "This Changes The Layout Of Your Collection, The 'Grid and List' Option Will Display Buttons For Users To Select.",
+      "default": "grid_list",
+      "options": [
+        {
+          "value": "grid_list",
+          "label": "t:sections.collection_template.settings.collection_layout.options__3.label"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "activate_collection_grid",
+      "label": "Activate Collection Grid",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "prodd_bg",
+      "label": "Product Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "sort_position",
+      "label": "Sort Position",
+      "options": [
+        {
+          "value": "Start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_product_title",
+      "label": "Hide Product Title",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_product_price",
+      "label": "Hide Product Price",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_all",
+      "label": "Hide All",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "producttit_color",
+      "label": "Product Title",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collection_template.settings.header__2.content"
+    },
+    {
+      "type": "select",
+      "id": "rows",
+      "label": "t:sections.collection_template.settings.rows_count.label",
+      "info": "This Changes The Amount Of Rows With Products Displayed On The Collection Page.",
+      "default": "4",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        },
+        {
+          "value": "7",
+          "label": "7"
+        },
+        {
+          "value": "8",
+          "label": "8"
+        },
+        {
+          "value": "9",
+          "label": "9"
+        },
+        {
+          "value": "10",
+          "label": "10"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "desktop_grid",
+      "label": "t:sections.collection_template.settings.products_per_row_desktop.label",
+      "default": "4",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_grid",
+      "label": "t:sections.collection_template.settings.products_per_row_mobile.label",
+      "default": "2",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "List View"
+    },
+    {
+      "type": "color",
+      "id": "filter_list_color",
+      "label": "Filter List Color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "list_position",
+      "label": "Product Info Position",
+      "options": [
+        {
+          "value": "start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "header",
+      "content": "List View Text"
+    },
+    {
+      "type": "color",
+      "id": "lv_product_title",
+      "label": "Product Title",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "lv_product_des",
+      "label": "Product Title",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_product_image_border",
+      "label": "Enable Product Image Border",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "lv_border",
+      "label": "Border",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Pagination Buttons"
+    },
+    {
+      "type": "paragraph",
+      "content": "Change The Color and Background Of Your Pagination Buttons. 'Current' Will Only Apply To The Active Page, 'Others' Will Only Apply To Non Active Pages.  "
+    },
+    {
+      "type": "color",
+      "id": "pagination_bg_current",
+      "label": "Pagination BG (Current)",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pagination_bg_others",
+      "label": "Pagination BG (Others)",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pagination_number_color_current",
+      "label": "Pagination # Color (Current)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "pagination_number_color_others",
+      "label": "Pagination # Color (Others)",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}
